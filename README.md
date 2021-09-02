@@ -9,7 +9,19 @@
 <img src='https://user-images.githubusercontent.com/82213429/131773269-39c1f0e6-b8ef-4ebd-b985-52d30fae52b0.png' width='700'>
 
 Helpful link : https://www.youtube.com/watch?v=lOQTiDY-gbA
+## How can we do this
+1. Find letters and shows the box  
+<img src='https://user-images.githubusercontent.com/82213429/131785370-85f06d28-41f0-4db0-85db-46dd316433a0.png' width='700'>
 
+2. Show and translate letteres that in boxes
+ 
+NETFLEX     ->     넷플렉스
 
+3. Find the color which maxium similiar with background and then cover them
+<img src='https://user-images.githubusercontent.com/82213429/131785447-d76aa2f8-407e-44df-bd7f-da76b70d9a06.png' width='700'>
+
+4.  And then rewrite the letter that transalte to korean as similiary as we can
+<img src='https://user-images.githubusercontent.com/82213429/131785502-cb55dfef-0d31-4842-a960-92ebff27b911.png' width='700'>
+    
 
 

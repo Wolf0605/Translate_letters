@@ -10,18 +10,30 @@
 
 Helpful link : https://www.youtube.com/watch?v=lOQTiDY-gbA
 ## How can we do this
-1. Find letters and shows the box  
+### 1. Find letters and shows the box  
 <img src='https://user-images.githubusercontent.com/82213429/131785370-85f06d28-41f0-4db0-85db-46dd316433a0.png' width='700'>
 
-2. Show and translate letteres that in boxes
+### 2. Show and translate letteres that in boxes
  
 NETFLEX     ->     넷플렉스
 
-3. Find the color which maxium similiar with background and then cover them
+### 3. Find the color which maxium similiar with background and then cover them
 <img src='https://user-images.githubusercontent.com/82213429/131785447-d76aa2f8-407e-44df-bd7f-da76b70d9a06.png' width='700'>
 
-4.  And then rewrite the letter that transalte to korean as similiary as we can
+### 4.  And then rewrite the letter that transalte to korean as similiary as we can
 <img src='https://user-images.githubusercontent.com/82213429/131785502-cb55dfef-0d31-4842-a960-92ebff27b911.png' width='700'>
-    
+
+## Requirement technic
+### 1.OCR
+<!-- What's OCR : https://m.blog.naver.com/pmw9440/221775817263 -->
+
+
+### 2.Google translate, Papago
+<!-- Google translate api : https://cloud.google.com/translate/?utm_source=google&utm_medium=cpc&utm_campaign=japac-KR-all-en-dr-bkws-all-super-trial-e-dr-1009882&utm_content=text-ad-none-none-DEV_c-CRE_256591654489-ADGP_Hybrid%20%7C%20BKWS%20-%20EXA%20%7C%20Txt%20~%20AI%20%26%20ML%20~%20Cloud%20Translation_Translation-google%20translate%20api-KWID_43700023276323310-kwd-315611653581&userloc_1009856-network_g&utm_term=KW_google%20translate%20api&gclid=CjwKCAjwj8eJBhA5EiwAg3z0m8VQLUQasUFD94RmB1TnzZO-RqCgLCIpC1_z7s6zkSbXq1w75jRDHRoCIjkQAvD_BwE&gclsrc=aw.ds
+ -->
+<!-- Papago api: https://developers.naver.com/docs/papago/README.md -->
+### 3. OpenCV, Image inpainting
+
+### 4.??
 
 

@@ -23,7 +23,7 @@ NETFLEX     ->     넷플렉스
 ### 4.  And then rewrite the letter that transalte to korean as similiary as we can
 <img src='https://user-images.githubusercontent.com/82213429/131785502-cb55dfef-0d31-4842-a960-92ebff27b911.png' width='700'>
 
-## Requirement technic
+## Require technic
 ### 1.OCR
 <!-- What's OCR : https://m.blog.naver.com/pmw9440/221775817263 -->
 

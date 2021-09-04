@@ -34,6 +34,5 @@ NETFLEX     ->     넷플렉스
 <!-- Papago api: https://developers.naver.com/docs/papago/README.md -->
 ### 3. OpenCV, Image inpainting
 
-### 4.??
-
+### 4.  Adobe photoshop, Adobe typekit
 

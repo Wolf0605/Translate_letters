@@ -22,7 +22,8 @@ NETFLEX     ->     넷플렉스
 
 ### 4.  And then rewrite the letter that transalte to korean as similiary as we can
 <img src='https://user-images.githubusercontent.com/82213429/131785502-cb55dfef-0d31-4842-a960-92ebff27b911.png' width='700'>
-## 0. 무엇을 넣고 무엇을 나오게할지 정확하게 정리
+
+## 무엇을 넣고 무엇을 나오게할지 정확하게 정리
 
 공  백 
 

@@ -22,16 +22,27 @@ NETFLEX     ->     넷플렉스
 
 ### 4.  And then rewrite the letter that transalte to korean as similiary as we can
 <img src='https://user-images.githubusercontent.com/82213429/131785502-cb55dfef-0d31-4842-a960-92ebff27b911.png' width='700'>
+## 0. 무엇을 넣고 무엇을 나오게할지 정확하게 정리
+
+공  백 
+
+
+공  백
 
 ## Require technic
 ### 1.OCR
 <!-- What's OCR : https://m.blog.naver.com/pmw9440/221775817263 -->
+#### Why PAPAGO??
+Just try out. Both of them. you just realize
+**파파고 api**
+1. 라벨값 ex) [[1,0],[3,0],[1,3],[1,5]]
+2. josn 파일 형식 살펴보기
+3. 
 
 
 ### 2.Google translate, Papago
-<!-- Google translate api : https://cloud.google.com/translate/?utm_source=google&utm_medium=cpc&utm_campaign=japac-KR-all-en-dr-bkws-all-super-trial-e-dr-1009882&utm_content=text-ad-none-none-DEV_c-CRE_256591654489-ADGP_Hybrid%20%7C%20BKWS%20-%20EXA%20%7C%20Txt%20~%20AI%20%26%20ML%20~%20Cloud%20Translation_Translation-google%20translate%20api-KWID_43700023276323310-kwd-315611653581&userloc_1009856-network_g&utm_term=KW_google%20translate%20api&gclid=CjwKCAjwj8eJBhA5EiwAg3z0m8VQLUQasUFD94RmB1TnzZO-RqCgLCIpC1_z7s6zkSbXq1w75jRDHRoCIjkQAvD_BwE&gclsrc=aw.ds
- -->
-<!-- Papago api: https://developers.naver.com/docs/papago/README.md -->
+**파파고 translateapi**
+1. WE
 ### 3. OpenCV, Image inpainting
 
 ### 4.  Adobe photoshop, Adobe typekit

@@ -35,11 +35,9 @@ NETFLEX     ->     넷플렉스
 
 +a ) ocr 에서 이상하게 출력된(정확도가 낮은) text 를 멀쩡하게 바꿔주는 작업 (LSTM, RNN )
 
-### 3. Inpainting
-**참고**로 아직 잘 모름
-
-
-
+### 3. Inpainting (난이도 높을예정)
+1. ocr 에 나온 각들을 주워서 블러핑 사용
+2. 글자들의 형태를 따서 주변색이랑 매칭
 
 
 ### 4.  Adobe photoshop, Adobe typekit

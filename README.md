@@ -52,10 +52,12 @@ mijung
 
 2.비디오에는 수많은 장면이 있는데, 나오는 글자마다 전부 해석할 것인가?.
 NO, 테이크가 긴곳만 할예정
+
 **예시**
 
 ![200](https://user-images.githubusercontent.com/82213429/135221823-84cf1752-450e-4ef6-b167-bbe790537e33.gif)
 ![1ST0](https://user-images.githubusercontent.com/82213429/135223127-2e38f9b8-675c-42c8-9c89-243de57f55cf.gif)
+
 
 **아닌예시**
 

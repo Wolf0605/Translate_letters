@@ -45,3 +45,19 @@ NETFLEX     ->     넷플렉스
 <img src='https://user-images.githubusercontent.com/82213429/135216131-d46968f8-5de1-4c8d-a1dd-a67c80c70359.png' width ='300'>
 
 mijung
+
+## Limit ( 제한할 사항 )
+비디오란 이미지를 이어 붙힌건데 글자가 많은 사진은 컴퓨터가 해석하는데 길게는 10초도 걸린다.
+1.이걸 어떻게 해서 시간을 줄일것 인가??
+
+2.비디오에는 수많은 장면이 있는데, 나오는 글자마다 전부 해석할 것인가?.
+NO, 테이크가 긴곳만 할예정
+**예시**
+
+![200](https://user-images.githubusercontent.com/82213429/135221823-84cf1752-450e-4ef6-b167-bbe790537e33.gif)
+![1ST0](https://user-images.githubusercontent.com/82213429/135223127-2e38f9b8-675c-42c8-9c89-243de57f55cf.gif)
+
+**아닌예시**
+
+![211155](https://user-images.githubusercontent.com/82213429/135223186-70e215a8-61af-4195-81c5-bd14e8dbf1da.gif)
+![200 (1)](https://user-images.githubusercontent.com/82213429/135223176-55032d6d-a2c6-41da-9c90-988f45696b0c.gif)

@@ -1,31 +1,3 @@
-"""
-===========
-Inpainting
-===========
-Inpainting [1]_ is the process of reconstructing lost or deteriorated
-parts of images and videos.
-
-The reconstruction is supposed to be performed in fully automatic way by
-exploiting the information presented in non-damaged regions.
-
-In this example, we show how the masked pixels get inpainted by
-inpainting algorithm based on 'biharmonic equation'-assumption [2]_ [3]_ [4]_.
-
-.. [1]  Wikipedia. Inpainting
-        https://en.wikipedia.org/wiki/Inpainting
-.. [2]  Wikipedia. Biharmonic equation
-        https://en.wikipedia.org/wiki/Biharmonic_equation
-.. [3]  S.B.Damelin and N.S.Hoang. "On Surface Completion and Image
-        Inpainting by Biharmonic Functions: Numerical Aspects",
-        International Journal of Mathematics and Mathematical Sciences,
-        Vol. 2018, Article ID 3950312
-        :DOI:`10.1155/2018/3950312`
-.. [4]  C. K. Chui and H. N. Mhaskar, MRA Contextual-Recovery Extension of
-        Smooth Functions on Manifolds, Appl. and Comp. Harmonic Anal.,
-        28 (2010), 104-113,
-        :DOI:`10.1016/j.acha.2009.04.004`
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 import  cv2
@@ -34,23 +6,24 @@ from skimage import data
 from skimage.morphology import disk, binary_dilation
 from skimage.restoration import inpaint
 
-path = 'Resources/jpn_anime2.png'
+path = 'Resources/pan1.jpg'
 image_orig = cv2.imread(path)
 
 # Create mask with six block defect regions
 mask = np.zeros(image_orig.shape[:-1], dtype=bool)
-# mask[20:60, 0:20] = 1
-# mask[160:180, 70:155] = 1
-# mask[30:60, 170:195] = 1
-# mask[-60:-30, 170:195] = 1
-# mask[-180:-160, 70:155] = 1
-# mask[-60:-20, 0:20] = 1
-mask[100:300, 150: 370] = 1
+mask[20:60, 0:20] = 1
+mask[160:180, 70:155] = 1
+mask[30:60, 170:195] = 1
+mask[-60:-30, 170:195] = 1
+mask[-180:-160, 70:155] = 1
+mask[-60:-20, 0:20] = 1
 
 # add a few long, narrow defects
-# mask[200:205, -200:] = 1
-# mask[150:255, 20:23] = 1
-# mask[365:368, 60:130] = 1
+mask[200:205, -200:] = 1
+mask[150:255, 20:23] = 1
+mask[365:368, 60:130] = 1
+
+mask [376: 411, 415:453] = 1
 
 # add randomly positioned small point-like defects
 rstate = np.random.default_rng(0)

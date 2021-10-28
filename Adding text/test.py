@@ -1,6 +1,7 @@
 from PIL import Image ,ImageFont, ImageDraw, ImageOps
 
 
+into = 'Adding text/Resources/final-cover-forest.jpg'
 # What's at?
 def draw_text_90_into (text: str, into, at: list):
     # Measure the text area
@@ -30,28 +31,20 @@ def draw_text_90_into (text: str, into, at: list):
     into.paste (img, at)
     # img.show()
 
-into= Image.open("Resources/unnamed.jpg")
+def draw_text(text: str, into, at: tuple):
 
-draw_text_90_into('hihihi', into, [600,300])
+    f = ImageFont.truetype ('ttf/Merriweather-BoldItalic.ttf', 100)
+    # image.new( mode, size(A x B))
+    txt=Image.new('L', (500,500))
+    d = ImageDraw.Draw(txt)
+    d.text( at, text,  font=f, fill=100)
 
-# into.show()
+    w=txt.rotate(55,  expand=1)
 
-# into = Image.open("Resources/final-cover-forest.jpg")
-# print( into.size )
-# def draw_text(text: str, into, at: tuple):
-#
-#     f = ImageFont.truetype ('ttf/Merriweather-BoldItalic.ttf', 100)
-#     # image.new( mode, size(A x B))
-#     txt=Image.new('L', (500,500))
-#     d = ImageDraw.Draw(txt)
-#     d.text( at, text,  font=f, fill=100)
-#
-#     w=txt.rotate(55,  expand=1)
-#
-#     into.paste( ImageOps.colorize(w, (0,0,0), (0,0,0)), (242,60),  w)
-#     into.show()
-#
-# draw_text('hi wolf', into, (0,0))
+    into.paste( ImageOps.colorize(w, (0,0,0), (0,0,0)), (242,60),  w)
+    into.show()
+
+draw_text('hi wolf', into, (0,0))
 
 
 

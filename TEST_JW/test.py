@@ -11,7 +11,7 @@ import numpy as np
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # 이미지 파일 경로
-file_path = r'C:\Users\Wolf\PycharmProjects\Translate_letters\easy-ocr-project\patient.jpg'
+file_path = r'sign_noun_002_33753.jpg'
 img = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
 CLIENT_ID = "MawiiHEojSbWlRvZjWEM"
@@ -135,14 +135,28 @@ def mask_image(img2):
     # masking 작업
     img_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
     _, mask = cv2.threshold(img_gray, 0, 255, cv2.THRESH_OTSU)
-    mask = cv2.bitwise_not(mask)
+    print(mask.shape)
+    # 색상 검출해서 글씨 색이 밝든 어둡든 masking 씌워주기
+    img2_hsv = cv2.cvtColor(img2, cv2.COLOR_BGR2HSV)
+    dst2 = cv2.inRange(img2_hsv, (0, 0, 0), (50, 50, 50))
+    # 바깥이 어두운색 이면,
+    if mask[-1,-1] and mask[-1,0] == dst2:
+        mask = cv2.bitwise_not(mask)
+    else:
+        pass
+    # 만약 안에 글씨가 더 밝은 글씨면,
+
+    # 글씨가 어두운 색이라면,
+
+
 
     # 글자 두껍게만들기
     kernel = np.ones((3, 3), np.uint8)
-    mask = cv2.dilate(mask, kernel, iterations=2)
+    mask = cv2.dilate(mask, kernel, iterations=4)
     plt.imshow(mask)
     plt.show()
     return mask
+
 
 def change_original(masked_img, bbox):
     x_min = bbox[0, 0]
@@ -156,11 +170,12 @@ def change_original(masked_img, bbox):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     bbox_list, text_list = easy_ocr_result(img)
+    # print('Text_list :', text_list)
+    # tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
+    # print(f'Tranlated_texts : {tranlated_texts}')
 
-    img_list = list()
     for bbox in bbox_list:
         img_cut = cut_image(img, bbox)
-        # img_list.append(img_cut)
         mask = mask_image(img_cut)
         masked_img = cv2.inpaint(img_cut, mask, 3, cv2.INPAINT_TELEA)
 

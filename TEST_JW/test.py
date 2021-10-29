@@ -177,10 +177,11 @@ if __name__ == '__main__':
 
     for bbox in bbox_list:
         img_cut = cut_image(img, bbox)
-        plt.imshow(img_cut)
-        plt.show()
+        # plt.imshow(img_cut)
+        # plt.show()
         mask = mask_image(img_cut)
         masked_img = cv2.inpaint(img_cut, mask, 3, cv2.INPAINT_TELEA)
         img = change_original(masked_img, bbox)
-    plt.imshow(img)
-    plt.show()
+    cv2.imshow('inpaint', img)
+    cv2.waitKey(0)
+

@@ -138,10 +138,9 @@ def mask_image(img2):
     _, mask = cv2.threshold(img_gray, 0, 255, cv2.THRESH_OTSU)
 
     # 글씨 색이 밝든 어둡든 masking 씌워주기
-    # rgb(img2)
-    # 글이 어두운색 이면,
-    # if 'dark':
-    mask = cv2.bitwise_not(mask)
+    return_rgb = rgb(img2)
+    if return_rgb == 0:
+        mask = cv2.bitwise_not(mask)
 
     kernel = np.ones((3, 3), np.uint8)
     mask = cv2.dilate(mask, kernel, iterations=2)
@@ -157,15 +156,17 @@ def change_original(masked_img, bbox):
     y_max = bbox[2, 1]
 
     img[y_min:y_max, x_min:x_max] =  masked_img
-
     return img
 
 def rgb(img):
-    dst1 = cv2.inRange(img, (0, 0, 0), (50, 50, 50))
-    if img[0][0] == dst1:
-        return 'bright'
-    else:
-        return 'dark'
+    r1, g1, b1 = img[0][0]
+    r2, g2, b2 = img[-1][0]
+    r3, g3, b3 = img[-1][-1]
+    r4, g4, b4 = img[0][-1]
+    # 배경이 밝은 부분이 한 부분이라도 있으면
+    if (r1>=0 and g1>150 and b1>150) or (r2>150 and g2>=0 and b2>150)\
+            or (r3>150 and g3>150 and b3>=0) or (r4>150 and g4>150 and b4>150):
+        return 0
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':

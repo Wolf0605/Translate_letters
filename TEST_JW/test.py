@@ -11,7 +11,7 @@ import numpy as np
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # 이미지 파일 경로
-file_path = r'sign_noun_002_33753.jpg'
+file_path = r'airport-sign-set-vector-illustration-260nw-403667989.jpg'
 img = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
 CLIENT_ID = "MawiiHEojSbWlRvZjWEM"
@@ -64,7 +64,7 @@ def easy_ocr_result(img, language='en', draw=True, text=False):
             br = (int(br[0]), int(br[1]))
             bl = (int(bl[0]), int(bl[1]))
             # cleanup the text and draw the box surrounding the text along
-            # with the OCR'd text itself
+            # with the OCR's text itself
             cv2.rectangle(img2, tl, br, (255, 0, 0), 2)
 
         # show the output image
@@ -134,27 +134,19 @@ def cut_image(img, bbox):
 def mask_image(img2):
     # masking 작업
     img_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+
     _, mask = cv2.threshold(img_gray, 0, 255, cv2.THRESH_OTSU)
-    print(mask.shape)
-    # 색상 검출해서 글씨 색이 밝든 어둡든 masking 씌워주기
-    img2_hsv = cv2.cvtColor(img2, cv2.COLOR_BGR2HSV)
-    dst2 = cv2.inRange(img2_hsv, (0, 0, 0), (50, 50, 50))
-    # 바깥이 어두운색 이면,
-    if mask[-1,-1] and mask[-1,0] == dst2:
-        mask = cv2.bitwise_not(mask)
-    else:
-        pass
-    # 만약 안에 글씨가 더 밝은 글씨면,
 
-    # 글씨가 어두운 색이라면,
+    # 글씨 색이 밝든 어둡든 masking 씌워주기
+    # rgb(img2)
+    # 글이 어두운색 이면,
+    # if 'dark':
+    mask = cv2.bitwise_not(mask)
 
-
-
-    # 글자 두껍게만들기
     kernel = np.ones((3, 3), np.uint8)
-    mask = cv2.dilate(mask, kernel, iterations=4)
-    plt.imshow(mask)
-    plt.show()
+    mask = cv2.dilate(mask, kernel, iterations=2)
+    # plt.imshow(mask)
+    # plt.show()
     return mask
 
 
@@ -167,18 +159,27 @@ def change_original(masked_img, bbox):
     img[y_min:y_max, x_min:x_max] =  masked_img
 
     return img
+
+def rgb(img):
+    dst1 = cv2.inRange(img, (0, 0, 0), (50, 50, 50))
+    if img[0][0] == dst1:
+        return 'bright'
+    else:
+        return 'dark'
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     bbox_list, text_list = easy_ocr_result(img)
-    # print('Text_list :', text_list)
-    # tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
-    # print(f'Tranlated_texts : {tranlated_texts}')
+    print('Text_list :', text_list)
+    tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
+    print(f'Tranlated_texts : {tranlated_texts}')
 
     for bbox in bbox_list:
         img_cut = cut_image(img, bbox)
+        plt.imshow(img_cut)
+        plt.show()
         mask = mask_image(img_cut)
         masked_img = cv2.inpaint(img_cut, mask, 3, cv2.INPAINT_TELEA)
-
         img = change_original(masked_img, bbox)
-        plt.imshow(img)
-        plt.show()
+    plt.imshow(img)
+    plt.show()

@@ -165,6 +165,8 @@ def rgb(img):
     r3, g3, b3 = img[-1][-1]
     r4, g4, b4 = img[0][-1]
     # 배경이 밝은 부분이 한 부분이라도 있으면
+    ##
+    # 수정필요함 (귀퉁이 4개중 2개 이상이 흰색이면 이런식으로 )
     if (r1>=0 and g1>150 and b1>150) or (r2>150 and g2>=0 and b2>150)\
             or (r3>150 and g3>150 and b3>=0) or (r4>150 and g4>150 and b4>150):
         return 0

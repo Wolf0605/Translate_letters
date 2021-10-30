@@ -1,10 +1,10 @@
 from PIL import Image ,ImageFont, ImageDraw, ImageOps
 
 
-into = 'Adding text/Resources/final-cover-forest.jpg'
+into = 'Resources/final-cover-forest.jpg'
 # What's at?
 def draw_text_90_into (text: str, into, at: list):
-    # Measure the text area
+#     # Measure the text area
     font = ImageFont.truetype ('ttf/Merriweather-BoldItalic.ttf', 100)
     # wi = x, hi = y
     wi, hi = font.getsize(text)
@@ -39,9 +39,9 @@ def draw_text(text: str, into, at: tuple):
     d = ImageDraw.Draw(txt)
     d.text( at, text,  font=f, fill=100)
 
-    w=txt.rotate(55,  expand=1)
+    w=txt.rotate(0,  expand=1)
 
-    into.paste( ImageOps.colorize(w, (0,0,0), (0,0,0)), (242,60),  w)
+    into.paste(ImageOps.colorize(w, (0,0,0), (255, 255, 84)), (242,60), w)
     into.show()
 
 draw_text('hi wolf', into, (0,0))
@@ -50,16 +50,16 @@ draw_text('hi wolf', into, (0,0))
 
 
 # Rotate Image By 180 Degree
-rotated_image1 = into.rotate(10)
-
-# This is Alternative Syntax To Rotate
-# The Image
-rotated_image2 = into.transpose(Image.ROTATE_90)
-
-# This Will Rotate Image By 60 Degree
-rotated_image3 = into.rotate(60)
-
-rotated_image1.show()
-# rotated_image2.show()
-# rotated_image3.show()
-rotated_image1.save('rolex.png')
+# rotated_image1 = into.rotate(10)
+#
+# # This is Alternative Syntax To Rotate
+# # The Image
+# rotated_image2 = into.transpose(Image.ROTATE_90)
+#
+# # This Will Rotate Image By 60 Degree
+# rotated_image3 = into.rotate(60)
+#
+# rotated_image1.show()
+# # rotated_image2.show()
+# # rotated_image3.show()
+# rotated_image1.save('rolex.png')

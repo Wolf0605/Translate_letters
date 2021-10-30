@@ -174,15 +174,21 @@ def rewrite(tranlated_texts ,bbox_list):
     image_path = 'output_inpainting'
     img = Image.open(f"{image_path}/{file_path}")
 
+
     title_font = ImageFont.truetype('ttf/Merriweather-BoldItalic.ttf', 30)
     image_editable = ImageDraw.Draw(img)
     # (x, y ) , ( 237, 230, 211) 색감
     for idx, bbox in enumerate(bbox_list):
         text = tranlated_texts[idx]
+        # # 내일 만듦(10.30)
+        # wi, hi = title_font.getsize(text)
+
         image_editable.text((bbox[0][0], bbox[0][1]), text, (237, 100, 110), font=title_font)
 
     save_rewrite_images()
 
+def decsion_font_size():
+    pass # 내일 만듦(10.30)
 
 
 def save_inpainting_images():
@@ -192,7 +198,7 @@ def save_inpainting_images():
 
 def save_rewrite_images():
     image_path = 'output_rewrite'
-    save_img = Image.fromarray(img)
+    save_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     save_img.save(f"{image_path}/{file_path}")
 
 # Press the green button in the gutter to run the script.

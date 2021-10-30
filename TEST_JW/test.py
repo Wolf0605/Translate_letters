@@ -6,6 +6,7 @@ import googletrans
 from typing import List
 import requests
 import numpy as np
+from PIL import Image, ImageFont, ImageDraw
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
@@ -168,6 +169,32 @@ def rgb(img):
             or (r3>150 and g3>150 and b3>=0) or (r4>150 and g4>150 and b4>150):
         return 0
 
+def rewrite(tranlated_texts ,bbox_list):
+    # 폰트( 구글 폰트에서 이용가능 ) , 폰트크기
+    image_path = 'output_inpainting'
+    img = Image.open(f"{image_path}/{file_path}")
+
+    title_font = ImageFont.truetype('ttf/Merriweather-BoldItalic.ttf', 30)
+    image_editable = ImageDraw.Draw(img)
+    # (x, y ) , ( 237, 230, 211) 색감
+    for idx, bbox in enumerate(bbox_list):
+        text = tranlated_texts[idx]
+        image_editable.text((bbox[0][0], bbox[0][1]), text, (237, 100, 110), font=title_font)
+
+    save_rewrite_images()
+
+
+
+def save_inpainting_images():
+    image_path = f'output_inpainting'
+    save_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    save_img.save(f"{image_path}/{file_path}")
+
+def save_rewrite_images():
+    image_path = 'output_rewrite'
+    save_img = Image.fromarray(img)
+    save_img.save(f"{image_path}/{file_path}")
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     bbox_list, text_list = easy_ocr_result(img)
@@ -182,6 +209,9 @@ if __name__ == '__main__':
         mask = mask_image(img_cut)
         masked_img = cv2.inpaint(img_cut, mask, 3, cv2.INPAINT_TELEA)
         img = change_original(masked_img, bbox)
-    cv2.imshow('inpaint', img)
-    cv2.waitKey(0)
+
+    save_inpainting_images()
+    rewrite(text_list ,bbox_list)
+
+
 

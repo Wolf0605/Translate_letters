@@ -1,13 +1,10 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
 file_path = r'dead_endjpg.jpg'
 img = cv2.imread(file_path)
 
-# cv2.imshow('hi', img)
-# cv2.waitKey(0)
-# plt.imshow(img)
-# plt.show()
 def rgb(img):
     r1, g1, b1 = img[0][0]
     r2, g2, b2 = img[-1][0]
@@ -18,8 +15,6 @@ def rgb(img):
             or (r3>100 and g3>100 and b3>=0) or (r4>100 and g4>100 and b4>100):
         return 0
 
-# rgb(img)
-# hi()
 
 def mask_image(img):
     # masking 작업
@@ -37,8 +32,14 @@ def mask_image(img):
     plt.show()
     return mask
 
-return_rgb = rgb(img)
-if return_rgb == 0:
-    print('000')
-else:
-    print('nono')
+def call():
+    file_path = r'dead_endjpg.jpg'
+    img = cv2.imread(file_path, cv2.IMREAD_COLOR)
+
+    save_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    save_img.save("image_test.jpg")
+
+    cv2.imshow('img', img)
+    cv2.waitKey(0)
+
+call()

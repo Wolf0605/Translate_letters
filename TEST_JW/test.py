@@ -12,7 +12,7 @@ from PIL import Image, ImageFont, ImageDraw
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # 이미지 파일 경로
-file_path = r'airport-sign-set-vector-illustration-260nw-403667989.jpg'
+file_path = r'sign_noun_002_33753.jpg'
 img = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
 CLIENT_ID = "MawiiHEojSbWlRvZjWEM"
@@ -176,21 +176,32 @@ def rewrite(tranlated_texts ,bbox_list):
     image_path = 'output_inpainting'
     img = Image.open(f"{image_path}/{file_path}")
 
-
-    title_font = ImageFont.truetype('ttf/Merriweather-BoldItalic.ttf', 30)
     image_editable = ImageDraw.Draw(img)
+
     # (x, y ) , ( 237, 230, 211) 색감
     for idx, bbox in enumerate(bbox_list):
         text = tranlated_texts[idx]
-        # # 내일 만듦(10.30)
-        # wi, hi = title_font.getsize(text)
+        title_font = ImageFont.truetype('ttf/NotoSansKR-Bold.otf', 1)
+        wi, _ = title_font.getsize(text)
+        # bbox_wi = bbox[1][0] - bbox[0][0]
+        bbox_hi = bbox[2][1] - bbox[1][1]
 
-        image_editable.text((bbox[0][0], bbox[0][1]), text, (237, 100, 110), font=title_font)
+        font_size = decsion_font_size(bbox_hi, text)
+        title_font = ImageFont.truetype('ttf/NotoSansKR-Bold.otf', font_size)
+        image_editable.text((bbox[0][0], bbox[0][1]), text, (255,255,255), anchor = 'lt', font=title_font)
 
-    save_rewrite_images()
+    save_rewrite_images(img)
 
-def decsion_font_size():
-    pass # 내일 만듦(10.30)
+def decsion_font_size( bbox_hi, text):
+    font_size = 1
+    title_font = ImageFont.truetype('ttf/NotoSansKR-Bold.otf', font_size)
+    _, hi = title_font.getsize(text)
+    while hi < bbox_hi:
+        title_font = ImageFont.truetype('ttf/NotoSansKR-Bold.otf', font_size)
+        font_size += 1
+        _, hi = title_font.getsize(text)
+    return font_size
+
 
 
 def save_inpainting_images():
@@ -198,10 +209,9 @@ def save_inpainting_images():
     save_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     save_img.save(f"{image_path}/{file_path}")
 
-def save_rewrite_images():
+def save_rewrite_images(img):
     image_path = 'output_rewrite'
-    save_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    save_img.save(f"{image_path}/{file_path}")
+    img.save(f"{image_path}/{file_path}")
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -219,7 +229,7 @@ if __name__ == '__main__':
         img = change_original(masked_img, bbox)
 
     save_inpainting_images()
-    rewrite(text_list ,bbox_list)
+    rewrite(tranlated_texts,bbox_list)
 
 
 

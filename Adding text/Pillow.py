@@ -13,5 +13,4 @@ image_editable = ImageDraw.Draw(img)
 for x in range(3):
     image_editable.text((0,x * 50), title_text, (237, 100, 110), font=title_font)
 
-
-Image._show(img)
+img.save('hi.jpg')

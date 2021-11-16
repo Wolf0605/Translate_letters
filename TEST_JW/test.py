@@ -8,14 +8,15 @@ import requests
 import numpy as np
 from PIL import Image, ImageFont, ImageDraw
 import torch
+from sklearn.cluster import KMeans
 
-print(torch.cuda.is_available())
+# print(torch.cuda.is_available())
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # 이미지 파일 경로
-file_path = r'sign_noun_002_33753.jpg'
+file_path = r'67nMHc.jpg'
 img = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
 CLIENT_ID = "MawiiHEojSbWlRvZjWEM"
@@ -174,7 +175,7 @@ def rgb(img):
             or (r3>150 and g3>150 and b3>=0) or (r4>150 and g4>150 and b4>150):
         return 0
 
-def rewrite(tranlated_texts ,bbox_list):
+def rewrite(tranlated_texts ,bbox_list, color, index):
     # 폰트( 구글 폰트에서 이용가능 ) , 폰트크기
     image_path = 'output_inpainting'
     img = Image.open(f"{image_path}/{file_path}")
@@ -191,7 +192,8 @@ def rewrite(tranlated_texts ,bbox_list):
 
         font_size = decsion_font_size(bbox_hi, text)
         title_font = ImageFont.truetype('ttf/NotoSansKR-Bold.otf', font_size)
-        image_editable.text((bbox[0][0], bbox[0][1]), text, (255,255,255), anchor = 'lt', font=title_font)
+        result = list(map(int, color[idx][index[idx][1]]))
+        image_editable.text((bbox[0][0], bbox[0][1]), text, tuple(result), anchor = 'lt', font=title_font)
 
     save_rewrite_images(img)
 
@@ -215,6 +217,39 @@ def save_inpainting_images():
 def save_rewrite_images(img):
     image_path = 'output_rewrite'
     img.save(f"{image_path}/{file_path}")
+def clt_(img):
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = img.reshape((img.shape[0] * img.shape[1], 3)) # height, width 통합
+
+    k = 3 # 예제는 5개로 나누겠습니다
+    clt = KMeans(n_clusters = k, random_state=0)
+    clt.fit(img)
+    return clt
+
+def centroid_histogram(clt):
+    # grab the number of different clusters and create a histogram
+    # based on the number of pixels assigned to each cluster
+    numLabels = np.arange(0, len(np.unique(clt.labels_))+1)
+    (hist, _) = np.histogram(clt.labels_, bins=numLabels)
+
+    # normalize the histogram, such that it sums to one
+    hist = hist.astype("float")
+    hist /= hist.sum()
+    # return the histogram
+    return hist
+
+
+def centroid_histogram(clt):
+    # grab the number of different clusters and create a histogram
+    # based on the number of pixels assigned to each cluster
+    numLabels = np.arange(0, len(np.unique(clt.labels_))+1)
+    (hist, _) = np.histogram(clt.labels_, bins=numLabels)
+
+    # normalize the histogram, such that it sums to one
+    hist = hist.astype("float")
+    hist /= hist.sum()
+    # return the histogram
+    return hist
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -222,15 +257,20 @@ if __name__ == '__main__':
     print('Text_list :', text_list)
     tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
     print(f'Tranlated_texts : {tranlated_texts}')
-
+    color_list = []
+    reverse_sorted_index = []
     for bbox in bbox_list:
         img_cut = cut_image(img, bbox)
+        clt = clt_(img_cut)
+        hist = centroid_histogram(clt)
+        color_list.append(clt.cluster_centers_)
+        reverse_index = (-hist).argsort()
+        reverse_sorted_index.append(reverse_index)
+
         mask = mask_image(img_cut)
         masked_img = cv2.inpaint(img_cut, mask, 3, cv2.INPAINT_TELEA)
         img = change_original(masked_img, bbox)
 
     save_inpainting_images()
-    rewrite(tranlated_texts,bbox_list)
-
-
+    rewrite(tranlated_texts,bbox_list,color_list, reverse_sorted_index)
 

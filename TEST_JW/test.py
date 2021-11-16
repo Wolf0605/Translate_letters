@@ -19,6 +19,7 @@ from sklearn.cluster import KMeans
 file_path = r'67nMHc.jpg'
 img = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
+# secret key 로 집어넣어야함
 CLIENT_ID = "MawiiHEojSbWlRvZjWEM"
 CLIENT_SECRET = "gY1PNWHP54"
 
@@ -149,6 +150,7 @@ def mask_image(img2):
 
     kernel = np.ones((3, 3), np.uint8)
     mask = cv2.dilate(mask, kernel, iterations=2)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
     # plt.imshow(mask)
     # plt.show()
     return mask
@@ -164,19 +166,19 @@ def change_original(masked_img, bbox):
     return img
 
 def rgb(img):
-    r1, g1, b1 = img[0][0]
-    r2, g2, b2 = img[-1][0]
-    r3, g3, b3 = img[-1][-1]
-    r4, g4, b4 = img[0][-1]
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _, mask = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+
     # 배경이 밝은 부분이 한 부분이라도 있으면
     ##
     # 수정필요함 (귀퉁이 4개중 2개 이상이 흰색이면 이런식으로 )
-    if (r1>=0 and g1>150 and b1>150) or (r2>150 and g2>=0 and b2>150)\
-            or (r3>150 and g3>150 and b3>=0) or (r4>150 and g4>150 and b4>150):
+    flat_list = list(mask.ravel())
+    if flat_list.count(0) > len(flat_list):
         return 0
 
 def rewrite(tranlated_texts ,bbox_list, color, index):
     # 폰트( 구글 폰트에서 이용가능 ) , 폰트크기
+
     image_path = 'output_inpainting'
     img = Image.open(f"{image_path}/{file_path}")
 
@@ -238,6 +240,15 @@ def centroid_histogram(clt):
     hist /= hist.sum()
     # return the histogram
     return hist
+
+def contour_mask(mask):
+    contour_pos = []
+    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, 3)
+
+    for pos in range(len(contours)):
+        area = cv2.contourArea(contours[pos])
+        if area > 100:
+            contour_pos.append(pos)
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':

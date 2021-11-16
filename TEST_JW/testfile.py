@@ -16,6 +16,11 @@ def rgb(img):
             or (r3>100 and g3>100 and b3>=0) or (r4>100 and g4>100 and b4>100):
         return 0
 
+def rgb2(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _, mask = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV)
+
+    return mask
 
 def mask_image(img):
     # masking 작업
@@ -43,44 +48,31 @@ def call():
     cv2.imshow('img', img)
     cv2.waitKey(0)
 
-# def clt_(img):
-#     img = img.reshape((img.shape[0] * img.shape[1], 3)) # height, width 통합
-#
-#     k = 5 # 예제는 5개로 나누겠습니다
-#     clt = KMeans(n_clusters = k, random_state=0)
-#     clt.fit(img)
-#     return clt
-#
-#
-#
-# def centroid_histogram(clt):
-#     # grab the number of different clusters and create a histogram
-#     # based on the number of pixels assigned to each cluster
-#     numLabels = np.arange(0, len(np.unique(clt.labels_))+1)
-#     (hist, _) = np.histogram(clt.labels_, bins=numLabels)
-#
-#     # normalize the histogram, such that it sums to one
-#     hist = hist.astype("float")
-#     hist /= hist.sum()
-#     # return the histogram
-#     return hist
-#
-#
-# clt = clt_(img)
-#
-# # k = 값에 따라 달라짐.
-# color_list = []
-# for center in clt.cluster_centers_:
-#     color_list.append(center)
-#
-# print(len(np.unique(clt.labels_)))
-# hist = centroid_histogram(clt)
-# print(hist)
-# print(color_list)
-# sorted_index = (-hist).argsort()
-# print(sorted_index)
+def clt_(img):
+    img = img.reshape((img.shape[0] * img.shape[1], 3)) # height, width 통합
 
-# hist 를 정렬하기
-# print(tuple(round([1.1,2.2,3.3])))
-result = list(map(int, [1.1,3.0]))
-print(result)
+    k = 5 # 예제는 5개로 나누겠습니다
+    clt = KMeans(n_clusters = k, random_state=0)
+    clt.fit(img)
+    return clt
+
+
+
+def centroid_histogram(clt):
+    # grab the number of different clusters and create a histogram
+    # based on the number of pixels assigned to each cluster
+    numLabels = np.arange(0, len(np.unique(clt.labels_))+1)
+    (hist, _) = np.histogram(clt.labels_, bins=numLabels)
+
+    # normalize the histogram, such that it sums to one
+    hist = hist.astype("float")
+    hist /= hist.sum()
+    # return the histogram
+    return hist
+
+# print(rgb2(img).ravel())
+
+t = list(rgb2(img).ravel())
+print(len(t))
+print(t.count(0))
+print(t.count(255))

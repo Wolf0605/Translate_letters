@@ -165,6 +165,7 @@ def change_original(masked_img, bbox):
     img[y_min:y_max, x_min:x_max] =  masked_img
     return img
 
+# 123
 def rgb(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     _, mask = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)

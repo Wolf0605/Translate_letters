@@ -217,6 +217,7 @@ def save_inpainting_images():
 def save_rewrite_images(img):
     image_path = 'output_rewrite'
     img.save(f"{image_path}/{file_path}")
+
 def clt_(img):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = img.reshape((img.shape[0] * img.shape[1], 3)) # height, width 통합
@@ -225,19 +226,6 @@ def clt_(img):
     clt = KMeans(n_clusters = k, random_state=0)
     clt.fit(img)
     return clt
-
-def centroid_histogram(clt):
-    # grab the number of different clusters and create a histogram
-    # based on the number of pixels assigned to each cluster
-    numLabels = np.arange(0, len(np.unique(clt.labels_))+1)
-    (hist, _) = np.histogram(clt.labels_, bins=numLabels)
-
-    # normalize the histogram, such that it sums to one
-    hist = hist.astype("float")
-    hist /= hist.sum()
-    # return the histogram
-    return hist
-
 
 def centroid_histogram(clt):
     # grab the number of different clusters and create a histogram

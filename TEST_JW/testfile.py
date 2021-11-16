@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from sklearn.cluster import KMeans
-file_path = r'dead_endjpg.jpg'
+file_path = r'inpaint.jpg'
 img = cv2.imread(file_path)
 
 def rgb(img):
@@ -70,9 +70,17 @@ def centroid_histogram(clt):
     # return the histogram
     return hist
 
-# print(rgb2(img).ravel())
+def draw_contour(img):
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(img_gray, 50, 255, cv2.THRESH_BINARY)
+    kernel = np.ones((5, 5), np.uint8)
+    dilation = cv2.dilate(thresh, kernel, iterations=2)
+    closing = cv2.morphologyEx(dilation, cv2.MORPH_CLOSE, kernel)
+    # contours, hierarchy = cv2.findContours(closing, cv2.RETR_EXTERNAL, 3)
+    #
+    # img_contour = cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
 
-t = list(rgb2(img).ravel())
-print(len(t))
-print(t.count(0))
-print(t.count(255))
+    return dilation
+img_contour = draw_contour(img)
+cv2.imshow('gg', img_contour)
+cv2.waitKey(0)

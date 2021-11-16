@@ -151,6 +151,10 @@ def mask_image(img2):
     kernel = np.ones((3, 3), np.uint8)
     mask = cv2.dilate(mask, kernel, iterations=2)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
+    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, 3)
+    img_contour = cv2.drawContours(img_original, contours, -1, (0, 255, 0), 3)
+
     # plt.imshow(mask)
     # plt.show()
     return mask
@@ -170,9 +174,6 @@ def rgb(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     _, mask = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
 
-    # 배경이 밝은 부분이 한 부분이라도 있으면
-    ##
-    # 수정필요함 (귀퉁이 4개중 2개 이상이 흰색이면 이런식으로 )
     flat_list = list(mask.ravel())
     if flat_list.count(0) > len(flat_list):
         return 0

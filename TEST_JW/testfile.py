@@ -3,24 +3,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from sklearn.cluster import KMeans
-file_path = r'inpaint.jpg'
+file_path = r'airport-sign-set-vector-illustration-260nw-403667989.jpg'
 img = cv2.imread(file_path)
 
 def rgb(img):
-    r1, g1, b1 = img[0][0]
-    r2, g2, b2 = img[-1][0]
-    r3, g3, b3 = img[-1][-1]
-    r4, g4, b4 = img[0][-1]
-
-    if (r1>=0 and g1>100 and b1>100) or (r2>100 and g2>=0 and b2>100)\
-            or (r3>100 and g3>100 and b3>=0) or (r4>100 and g4>100 and b4>100):
-        return 0
-
-def rgb2(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    _, mask = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV)
+    _, mask = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
 
-    return mask
+    flat_list = list(mask.ravel())
+    if flat_list.count(0) > len(flat_list):
+        return 0
 
 def mask_image(img):
     # masking 작업
@@ -72,15 +64,18 @@ def centroid_histogram(clt):
 
 def draw_contour(img):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    _, thresh = cv2.threshold(img_gray, 50, 255, cv2.THRESH_BINARY)
+    _, thresh = cv2.threshold(img_gray, 200, 255, cv2.THRESH_BINARY)
+    # return_rgb = rgb(img)
+    # if return_rgb != 0:
+    #     thresh = cv2.bitwise_not(thresh)
     kernel = np.ones((5, 5), np.uint8)
     dilation = cv2.dilate(thresh, kernel, iterations=2)
     closing = cv2.morphologyEx(dilation, cv2.MORPH_CLOSE, kernel)
-    # contours, hierarchy = cv2.findContours(closing, cv2.RETR_EXTERNAL, 3)
-    #
-    # img_contour = cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
+    contours, hierarchy = cv2.findContours(closing, cv2.RETR_EXTERNAL, 3)
 
-    return dilation
+    img_contour = cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
+
+    return img_gray
 img_contour = draw_contour(img)
 cv2.imshow('gg', img_contour)
 cv2.waitKey(0)

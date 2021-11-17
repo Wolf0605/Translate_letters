@@ -16,7 +16,7 @@ from sklearn.cluster import KMeans
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # 이미지 파일 경로
-file_path = r'67nMHc.jpg'
+file_path = r'airport-sign-set-vector-illustration-260nw-403667989.jpg'
 img = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
 # secret key 로 집어넣어야함
@@ -145,15 +145,15 @@ def mask_image(img2):
 
     # 글씨 색이 밝든 어둡든 masking 씌워주기
     return_rgb = rgb(img2)
-    if return_rgb == 0:
+    if return_rgb != 0:
         mask = cv2.bitwise_not(mask)
 
     kernel = np.ones((3, 3), np.uint8)
     mask = cv2.dilate(mask, kernel, iterations=2)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 
-    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, 3)
-    img_contour = cv2.drawContours(img_original, contours, -1, (0, 255, 0), 3)
+    # contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, 3)
+    # img_contour = cv2.drawContours(img_original, contours, -1, (0, 255, 0), 3)
 
     # plt.imshow(mask)
     # plt.show()
@@ -175,7 +175,7 @@ def rgb(img):
     _, mask = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
 
     flat_list = list(mask.ravel())
-    if flat_list.count(0) > len(flat_list):
+    if flat_list.count(0) > len(flat_list)/2:
         return 0
 
 def rewrite(tranlated_texts ,bbox_list, color, index):

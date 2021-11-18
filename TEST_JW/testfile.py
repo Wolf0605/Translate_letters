@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from sklearn.cluster import KMeans
-file_path = r'airport-sign-set-vector-illustration-260nw-403667989.jpg'
+file_path = r'DDEEEDDD.png'
 img = cv2.imread(file_path)
 
 def rgb(img):
@@ -11,7 +11,7 @@ def rgb(img):
     _, mask = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
 
     flat_list = list(mask.ravel())
-    if flat_list.count(0) > len(flat_list):
+    if flat_list.count(0) > len(flat_list)/2:
         return 0
 
 def mask_image(img):
@@ -64,10 +64,10 @@ def centroid_histogram(clt):
 
 def draw_contour(img):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    _, thresh = cv2.threshold(img_gray, 200, 255, cv2.THRESH_BINARY)
-    # return_rgb = rgb(img)
-    # if return_rgb != 0:
-    #     thresh = cv2.bitwise_not(thresh)
+    _, thresh = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)
+    return_rgb = rgb(img)
+    if return_rgb != 0:
+        thresh = cv2.bitwise_not(thresh)
     kernel = np.ones((5, 5), np.uint8)
     dilation = cv2.dilate(thresh, kernel, iterations=2)
     closing = cv2.morphologyEx(dilation, cv2.MORPH_CLOSE, kernel)
@@ -75,7 +75,15 @@ def draw_contour(img):
 
     img_contour = cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
 
-    return img_gray
+    return contours
+
 img_contour = draw_contour(img)
-cv2.imshow('gg', img_contour)
-cv2.waitKey(0)
+# cv2.imshow('gg', img_contour)
+# cv2.waitKey(0)
+# print(img_contour)
+# 총 7개의 contour 이 있어서 이렇게 뜨는것.
+
+t = [[1, 0], [1, 1], [3, 3]]
+print(type(t))
+if t in 0:
+    print('g')

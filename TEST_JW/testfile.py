@@ -5,7 +5,8 @@ from PIL import Image
 from sklearn.cluster import KMeans
 file_path = r'DDEEEDDD.png'
 img = cv2.imread(file_path)
-
+img_width = img.shape[1]
+img_height = img.shape[0]
 def rgb(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     _, mask = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
@@ -69,21 +70,26 @@ def draw_contour(img):
     if return_rgb != 0:
         thresh = cv2.bitwise_not(thresh)
     kernel = np.ones((5, 5), np.uint8)
-    dilation = cv2.dilate(thresh, kernel, iterations=2)
+    dilation = cv2.dilate(thresh, kernel, iterations=1)
     closing = cv2.morphologyEx(dilation, cv2.MORPH_CLOSE, kernel)
     contours, hierarchy = cv2.findContours(closing, cv2.RETR_EXTERNAL, 3)
 
-    img_contour = cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
+    index_box = []
+    for x in range(len(contours)):
+        if 0 not in contours[x]:
+            for i in range(len(contours[x])):
+                if img_width-5 <= contours[x][i][0][0] or img_height-5 <= contours[x][i][0][1]:
+                   break
+                else:
+                    index_box.append(x)
+    new_conoturs = []
+    for x in index_box:
+        new_conoturs.append(contours[x])
 
-    return contours
+    img_contour = cv2.drawContours(img, new_conoturs, -1, (0, 255, 0), 3)
 
+    return img_contour
 img_contour = draw_contour(img)
-# cv2.imshow('gg', img_contour)
-# cv2.waitKey(0)
+cv2.imshow('gg', img_contour)
+cv2.waitKey(0)
 # print(img_contour)
-# 총 7개의 contour 이 있어서 이렇게 뜨는것.
-
-t = [[1, 0], [1, 1], [3, 3]]
-print(type(t))
-if t in 0:
-    print('g')

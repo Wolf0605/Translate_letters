@@ -86,10 +86,9 @@ def draw_contour(img):
     for x in index_box:
         new_conoturs.append(contours[x])
 
-    img_contour = cv2.drawContours(img, new_conoturs, -1, (0, 255, 0), 3)
+    img_contour = cv2.drawContours(img, new_conoturs, -1, (0, 255, 0), thickness=cv2.FILLED)
 
     return img_contour
 img_contour = draw_contour(img)
 cv2.imshow('gg', img_contour)
 cv2.waitKey(0)
-# print(img_contour)

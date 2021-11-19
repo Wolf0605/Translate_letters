@@ -52,10 +52,10 @@ def easy_ocr_result(img, language='en', draw=True, text=False):
     # 텍스트 리스트
     text_list = []
 
-    if draw == False: # 원래 이미지만 출력
+    if draw == False:  # 원래 이미지만 출력
         display(img)
 
-    elif draw == True and text == False: # 이미지에 바운딩 박스그리기
+    elif draw == True and text == False:  # 이미지에 바운딩 박스그리기
         img2 = img.copy()
         # img2 = cv2.cvtColor(img2, cv2.COLOR_GRAY2BGR)
         for (bbox, text, prob) in results:
@@ -128,36 +128,53 @@ def translate_texts(texts: List[str], type='google') -> List[str]:
                 print("Error Code:", rescode)
 
     return tranlated_texts
-def cut_image(img, bbox):
+
+
+def cut_image(ori_img, bbox):
     x_min = bbox[0, 0]
     x_max = bbox[1, 0]
     y_min = bbox[0, 1]
     y_max = bbox[2, 1]
 
-    img = img[y_min:y_max, x_min:x_max]
-
+    img = ori_img[y_min:y_max, x_min:x_max]
+    # quarter_y = np.int32(y_max - (y_max - y_min) / 3)
+    #
+    # crop_img = ori_img[quarter_y:y_max, x_min:x_max]
     return img
 
-def mask_image(img2):
-    # masking 작업
-    img_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
-    _, mask = cv2.threshold(img_gray, 0, 255, cv2.THRESH_OTSU)
 
-    # 글씨 색이 밝든 어둡든 masking 씌워주기
-    return_rgb = rgb(img2)
+def mask_image(cut_img, reverse_list):
+    img_width = cut_img.shape[1]
+    img_height = cut_img.shape[0]
+    img_gray = cv2.cvtColor(cut_img, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)
+    return_rgb = rgb(cut_img)
     if return_rgb != 0:
-        mask = cv2.bitwise_not(mask)
+        thresh = cv2.bitwise_not(thresh)
 
-    kernel = np.ones((3, 3), np.uint8)
-    mask = cv2.dilate(mask, kernel, iterations=2)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    kernel = np.ones((5, 5), np.uint8)
+    dilation = cv2.dilate(thresh, kernel, iterations=1)
+    contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL, 3)
 
-    # contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, 3)
-    # img_contour = cv2.drawContours(img_original, contours, -1, (0, 255, 0), 3)
+    cut_img = cv2.cvtColor(cut_img, cv2.COLOR_BGR2RGB)
+    index_box = []
+    for x in range(len(contours)):
+        if 0 not in contours[x]:
+            for i in range(len(contours[x])):
+                if img_width - 2 <= contours[x][i][0][0] or img_height - 2 <= contours[x][i][0][1]:
+                    break
+                else:
+                    index_box.append(x)
+    index_box = set(index_box)
+    new_conoturs = []
+    for x in index_box:
+        new_conoturs.append(contours[x])
 
-    # plt.imshow(mask)
-    # plt.show()
+    reverse_list
+    result = list(map(int, color_list[0][reverse_list[0][0]]))
+    mask = cv2.drawContours(cut_img, new_conoturs, -1, tuple(result), thickness=cv2.FILLED)
+    mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
     return mask
 
 
@@ -167,8 +184,9 @@ def change_original(masked_img, bbox):
     y_min = bbox[0, 1]
     y_max = bbox[2, 1]
 
-    img[y_min:y_max, x_min:x_max] =  masked_img
+    img[y_min:y_max, x_min:x_max] = masked_img
     return img
+
 
 # 123
 def rgb(img):
@@ -176,10 +194,11 @@ def rgb(img):
     _, mask = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
 
     flat_list = list(mask.ravel())
-    if flat_list.count(0) > len(flat_list)/2:
+    if flat_list.count(0) > len(flat_list) / 2:
         return 0
 
-def rewrite(tranlated_texts ,bbox_list, color, index):
+
+def rewrite(tranlated_texts, bbox_list, color, index):
     # 폰트( 구글 폰트에서 이용가능 ) , 폰트크기
 
     image_path = 'output_inpainting'
@@ -198,11 +217,12 @@ def rewrite(tranlated_texts ,bbox_list, color, index):
         font_size = decsion_font_size(bbox_hi, text)
         title_font = ImageFont.truetype('ttf/NotoSansKR-Bold.otf', font_size)
         result = list(map(int, color[idx][index[idx][1]]))
-        image_editable.text((bbox[0][0], bbox[0][1]), text, tuple(result), anchor = 'lt', font=title_font)
+        image_editable.text((bbox[0][0], bbox[0][1]), text, tuple(result), anchor='lt', font=title_font)
 
     save_rewrite_images(img)
 
-def decsion_font_size( bbox_hi, text):
+
+def decsion_font_size(bbox_hi, text):
     font_size = 1
     title_font = ImageFont.truetype('ttf/NotoSansKR-Bold.otf', font_size)
     _, hi = title_font.getsize(text)
@@ -213,29 +233,31 @@ def decsion_font_size( bbox_hi, text):
     return font_size
 
 
-
 def save_inpainting_images():
     image_path = f'output_inpainting'
     save_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     save_img.save(f"{image_path}/{file_path}")
 
+
 def save_rewrite_images(img):
     image_path = 'output_rewrite'
     img.save(f"{image_path}/{file_path}")
 
+
 def clt_(img):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img = img.reshape((img.shape[0] * img.shape[1], 3)) # height, width 통합
+    img = img.reshape((img.shape[0] * img.shape[1], 3))  # height, width 통합
 
-    k = 3 # 예제는 5개로 나누겠습니다
-    clt = KMeans(n_clusters = k, random_state=0)
+    k = 3  # 예제는 5개로 나누겠습니다
+    clt = KMeans(n_clusters=k, random_state=0)
     clt.fit(img)
     return clt
+
 
 def centroid_histogram(clt):
     # grab the number of different clusters and create a histogram
     # based on the number of pixels assigned to each cluster
-    numLabels = np.arange(0, len(np.unique(clt.labels_))+1)
+    numLabels = np.arange(0, len(np.unique(clt.labels_)) + 1)
     (hist, _) = np.histogram(clt.labels_, bins=numLabels)
 
     # normalize the histogram, such that it sums to one
@@ -244,14 +266,6 @@ def centroid_histogram(clt):
     # return the histogram
     return hist
 
-def contour_mask(mask):
-    contour_pos = []
-    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, 3)
-
-    for pos in range(len(contours)):
-        area = cv2.contourArea(contours[pos])
-        if area > 100:
-            contour_pos.append(pos)
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -262,17 +276,16 @@ if __name__ == '__main__':
     color_list = []
     reverse_sorted_index = []
     for bbox in bbox_list:
-        img_cut = cut_image(img, bbox)
+        img_cut  = cut_image(img, bbox)
         clt = clt_(img_cut)
         hist = centroid_histogram(clt)
         color_list.append(clt.cluster_centers_)
         reverse_index = (-hist).argsort()
         reverse_sorted_index.append(reverse_index)
-
-        mask = mask_image(img_cut)
-        masked_img = cv2.inpaint(img_cut, mask, 3, cv2.INPAINT_TELEA)
-        img = change_original(masked_img, bbox)
+        # print('bbox : ', bbox)
+        mask = mask_image(img_cut, reverse_sorted_index)
+        img = change_original(mask, bbox)
 
     save_inpainting_images()
-    rewrite(tranlated_texts,bbox_list,color_list, reverse_sorted_index)
+    rewrite(tranlated_texts, bbox_list, color_list, reverse_sorted_index)
 

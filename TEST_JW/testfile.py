@@ -20,10 +20,6 @@ def mask_image(img):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     _, mask = cv2.threshold(img_gray, 0, 255, cv2.THRESH_OTSU)
 
-    # 색상 검출해서 글씨 색이 밝든 어둡든 masking 씌워주기
-    # 글이 어두운색 이면,
-    # if 'dark':
-    #     mask = cv2.bitwise_not(mask)
     mask = cv2.bitwise_not(mask)
     kernel = np.ones((3, 3), np.uint8)
     mask = cv2.dilate(mask, kernel, iterations=2)
@@ -63,14 +59,14 @@ def centroid_histogram(clt):
     # return the histogram
     return hist
 
-def draw_contour(img):
+def draw_contour(img,result):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     _, thresh = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)
     return_rgb = rgb(img)
     if return_rgb != 0:
         thresh = cv2.bitwise_not(thresh)
     kernel = np.ones((5, 5), np.uint8)
-    dilation = cv2.dilate(thresh, kernel, iterations=1)
+    dilation = cv2.dilate(thresh, kernel, iterations=2)
     closing = cv2.morphologyEx(dilation, cv2.MORPH_CLOSE, kernel)
     contours, hierarchy = cv2.findContours(closing, cv2.RETR_EXTERNAL, 3)
 
@@ -78,17 +74,46 @@ def draw_contour(img):
     for x in range(len(contours)):
         if 0 not in contours[x]:
             for i in range(len(contours[x])):
-                if img_width-5 <= contours[x][i][0][0] or img_height-5 <= contours[x][i][0][1]:
+                if img_width-10 <= contours[x][i][0][0] or img_height-10 <= contours[x][i][0][1]:
                    break
                 else:
                     index_box.append(x)
+    index_box = set(index_box)
     new_conoturs = []
+
     for x in index_box:
         new_conoturs.append(contours[x])
 
-    img_contour = cv2.drawContours(img, new_conoturs, -1, (0, 255, 0), thickness=cv2.FILLED)
+    mask = cv2.drawContours(img, new_conoturs, -1, tuple(result), thickness=cv2.FILLED)
 
-    return img_contour
-img_contour = draw_contour(img)
-cv2.imshow('gg', img_contour)
+    return thresh, mask
+
+def return_img(img):
+    x_min = 0
+    x_max = 100
+    y_min = 0
+    y_max = 100
+
+    quarter_y = int(y_max - (y_max - y_min) / 4)
+    crop_img = img[quarter_y:y_max, x_min:x_max]
+    img = img[y_min:y_max, x_min:x_max]
+    return crop_img, img
+
+crop_img, img = return_img(img)
+img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
+cv2.imshow('gg', img)
 cv2.waitKey(0)
+
+# color_list = []
+# reverse_sorted_index = []
+#
+# clt = clt_(img)
+# hist = centroid_histogram(clt)
+# color_list.append(clt.cluster_centers_)
+# reverse_index = (-hist).argsort()
+# reverse_sorted_index.append(reverse_index)
+# result = list(map(int, color_list[0][reverse_sorted_index[0][0]]))
+#
+# t, img_contour= draw_contour(img, result)
+# cv2.imshow('gg', img_contour)
+# cv2.waitKey(0)

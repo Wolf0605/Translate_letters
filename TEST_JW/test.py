@@ -16,7 +16,7 @@ from sklearn.cluster import KMeans
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # 이미지 파일 경로
-file_path = r'airport-sign-set-vector-illustration-260nw-403667989.jpg'
+file_path = r'am_chef.png'
 img = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
 # secret key 로 집어넣어야함
@@ -101,8 +101,28 @@ def easy_ocr_result(img, language='en', draw=True, text=False):
 
         # show the output image
         display(img2)
-    return np.array(bbox_list), text_list
+    return bbox_list, text_list
 
+def sum_box(bbox_list, text_list):
+    text_num = [x for x in range(len(text_list))]
+    print('text_num :', text_num)
+    try:
+        for x in text_num:
+            start = bbox_list[x][1]
+            later = bbox_list[x+1][0]
+            t= 13
+            if start[0] - t <= later[0] <= start[0] + t and start[1] -t <= later[1] <= start[1] +t:
+                bbox_list[x] = [bbox_list[x][0],bbox_list[x+1][1],bbox_list[x+1][2],bbox_list[x][3]]
+                text_list[x] = text_list[x] + ' ' +text_list[x+1]
+                bbox_list.remove(bbox_list[x+1])
+                text_list.remove(text_list[x+1])
+                text_num.remove(x+1)
+
+            else:
+                pass
+    except:
+        pass
+    return np.array(bbox_list), text_list
 
 def translate_texts(texts: List[str], type='google') -> List[str]:
     global tranlated_texts
@@ -255,23 +275,30 @@ def contour_mask(mask):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     bbox_list, text_list = easy_ocr_result(img)
+    print('bbox_list: ', len(bbox_list))
     print('Text_list :', text_list)
-    tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
-    print(f'Tranlated_texts : {tranlated_texts}')
-    color_list = []
-    reverse_sorted_index = []
-    for bbox in bbox_list:
-        img_cut = cut_image(img, bbox)
-        clt = clt_(img_cut)
-        hist = centroid_histogram(clt)
-        color_list.append(clt.cluster_centers_)
-        reverse_index = (-hist).argsort()
-        reverse_sorted_index.append(reverse_index)
+    print('(len)bbox_list', len(bbox_list))
+    bbox_list, text_list = sum_box(bbox_list, text_list)
+    print('bbox_list: ', len(bbox_list))
+    print('Text_list :', text_list)
+    print('(len)bbox_list', len(bbox_list))
 
-        mask = mask_image(img_cut)
-        masked_img = cv2.inpaint(img_cut, mask, 3, cv2.INPAINT_TELEA)
-        img = change_original(masked_img, bbox)
+    # tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
+    # print(f'Tranlated_texts : {tranlated_texts}')
+    # color_list = []
+    # reverse_sorted_index = []
+    # for bbox in bbox_list:
+    #     img_cut = cut_image(img, bbox)
+    #     clt = clt_(img_cut)
+    #     hist = centroid_histogram(clt)
+    #     color_list.append(clt.cluster_centers_)
+    #     reverse_index = (-hist).argsort()
+    #     reverse_sorted_index.append(reverse_index)
+    #
+    #     mask = mask_image(img_cut)
+    #     masked_img = cv2.inpaint(img_cut, mask, 3, cv2.INPAINT_TELEA)
+    #     img = change_original(masked_img, bbox)
 
-    save_inpainting_images()
-    rewrite(tranlated_texts,bbox_list,color_list, reverse_sorted_index)
+    # save_inpainting_images()
+    # rewrite(tranlated_texts,bbox_list,color_list, reverse_sorted_index)
 

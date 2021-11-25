@@ -103,6 +103,31 @@ def easy_ocr_result(img, language='en', draw=True, text=False):
         # show the output image
         display(img2)
     return np.array(bbox_list), text_list
+<<<<<<< Updated upstream
+=======
+x = 1
+z = 0
+def jaegi(bbox_list, text_list, x, z):
+    t = 10
+    if x < len(bbox_list):
+        if bbox_list[x-1][0][0] - t <= bbox_list[x][0][0] <= bbox_list[x-1][0][0] + t:
+            text_list[z] = text_list[z] +' ' + text_list[z+1]
+            # x 불러오기,
+            text_list.remove(text_list[z+1])
+            print(text_list)
+            x += 1
+            # print('x :', x)
+            jaegi(bbox_list, text_list, x, z)
+        elif bbox_list[x-1][0][0] - t > bbox_list[x][0][0] or bbox_list[x][0][0] > bbox_list[x-1][0][0] + t:
+            x += 1
+            z += 1
+            # print('z :', z)
+            jaegi(bbox_list, text_list, x, z)
+    else:
+        return 123
+
+
+>>>>>>> Stashed changes
 
 
 def translate_texts(texts: List[str], type='google') -> List[str]:
@@ -256,6 +281,7 @@ def contour_mask(mask):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     bbox_list, text_list = easy_ocr_result(img)
+<<<<<<< Updated upstream
     print('Text_list :', text_list)
     tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
     print(f'Tranlated_texts : {tranlated_texts}')
@@ -275,4 +301,37 @@ if __name__ == '__main__':
 
     save_inpainting_images()
     rewrite(tranlated_texts,bbox_list,color_list, reverse_sorted_index)
+=======
+    # print('bbox_list: ', len(bbox_list))
+    # print('Text_list :', text_list)
+    # print('(len)bbox_list', len(bbox_list))
+    sorted_index = array_box(bbox_list, text_list)
+
+    bbox_list, text_list = sum_box(bbox_list, text_list, sorted_index)
+    # print(text_list)
+    # print('bbox_list: ', len(bbox_list))
+    # print('Text_list :', text_list)
+    print('(len)bbox_list', len(bbox_list))
+    text = jaegi(bbox_list, text_list, x, z)
+    print(text)
+    # print(text)
+    # tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
+    # print(f'Tranlated_texts : {tranlated_texts}')
+    # color_list = []
+    # reverse_sorted_index = []
+    # for bbox in bbox_list:
+    #     img_cut = cut_image(img, bbox)
+    #     clt = clt_(img_cut)
+    #     hist = centroid_histogram(clt)
+    #     color_list.append(clt.cluster_centers_)
+    #     reverse_index = (-hist).argsort()
+    #     reverse_sorted_index.append(reverse_index)
+    #
+    #     mask = mask_image(img_cut)
+    #     masked_img = cv2.inpaint(img_cut, mask, 3, cv2.INPAINT_TELEA)
+    #     img = change_original(masked_img, bbox)
+
+    # save_inpainting_images()
+    # rewrite(tranlated_texts,bbox_list,color_list, reverse_sorted_index)
+>>>>>>> Stashed changes
 

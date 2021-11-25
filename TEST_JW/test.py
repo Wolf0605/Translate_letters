@@ -158,28 +158,22 @@ def sum_box(box_list, ttext_list, sorted_index):
 x = 0
 z = 0
 def jaegi(bbox_list, text_list, x, z):
-    y = []
     t = 10
-    try:
-        if bbox_list[x][0][0] - t <= bbox_list[x + 1][0][0] <= bbox_list[x][0][0] + t:
-            text_list[z] = text_list[z] +' ' + text_list[z+1]
-            # x 불러오기,
-            text_list.remove(text_list[z+1])
-            print(text_list)
-            x += 1
-            # print('x :', x)
-            jaegi(bbox_list, text_list, x, z)
-        elif x == len(bbox_list)-1:
-            return text_list
-        else:
-            x += 1
-            z += 1
-            # print('z :', z)
-            jaegi(bbox_list, text_list, x, z)
-    except:
-        pass
 
-
+    if x == len(bbox_list)-1:
+        return text_list
+    elif bbox_list[x][0][0] - t <= bbox_list[x + 1][0][0] <= bbox_list[x][0][0] + t:
+        text_list[z] = text_list[z] +' ' + text_list[z+1]
+        # x 불러오기,
+        text_list.remove(text_list[z+1])
+        print(text_list)
+        x += 1
+        # print('x :', x)
+        jaegi(bbox_list, text_list, x, z)
+    else:
+        x += 1
+        z += 1
+        jaegi(bbox_list, text_list, x, z)
 
 def translate_texts(texts: List[str], type='google') -> List[str]:
     global tranlated_texts
@@ -338,12 +332,15 @@ if __name__ == '__main__':
     sorted_index = array_box(bbox_list, text_list)
 
     bbox_list, text_list = sum_box(bbox_list, text_list, sorted_index)
-    print(text_list)
+    # print(text_list)
     # print('bbox_list: ', len(bbox_list))
     # print('Text_list :', text_list)
     # print('(len)bbox_list', len(bbox_list))
+    print('bbox _ len : ', len(bbox_list))
     text = jaegi(bbox_list, text_list, x, z)
     print(text)
+    # print(type(text))
+    # print(idx)
     # print(text)
     # tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
     # print(f'Tranlated_texts : {tranlated_texts}')

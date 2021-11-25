@@ -104,5 +104,9 @@ def tt():
     print(sort_idx)
 
     print(argsort(sort_idx))
-
-tt()
+lst = []
+def ja(lst):
+    for x in range(5):
+        if x in [1,3,5]
+            lst.append(x)
+        else:

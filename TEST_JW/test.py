@@ -16,7 +16,7 @@ from sklearn.cluster import KMeans
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # 이미지 파일 경로
-file_path = r'Untitled.png'
+file_path = r'phone.png'
 img = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
 # secret key 로 집어넣어야함
@@ -103,9 +103,41 @@ def easy_ocr_result(img, language='en', draw=True, text=False):
         display(img2)
     return bbox_list, text_list
 
-def sum_box(bbox_list, text_list):
+def argsort(seq):
+    # http://stackoverflow.com/questions/3071415/efficient-method-to-calculate-the-rank-vector-of-a-list-in-python
+    return sorted(range(len(seq)), key=seq.__getitem__)
+
+def array_box(bbox_list, text_list):
     text_num = [x for x in range(len(text_list))]
-    print('text_num :', text_num)
+    try:
+        for x in text_num:
+            start = (bbox_list[x][0][1] + bbox_list[x][3][1]) //2
+            later = (bbox_list[x+1][0][1] + bbox_list[x+1][3][1]) //2
+            t = 10
+            if start - t <= later <= start + t:
+                bbox_list[x+1][0][1] = bbox_list[x][0][1]
+                text_num.remove(x + 1)
+            else:
+                pass
+    except:
+        pass
+    # 하나씩 집어 넣어서 sort 정렬.
+    sort_idx = []
+    for x in range(len(text_list)):
+        t = bbox_list[x][0][0] + bbox_list[x][0][1] * 10000
+        sort_idx.append(t)
+    # print(sort_idx)
+    sorted_index = argsort(sort_idx)
+    return sorted_index
+
+def sum_box(box_list, ttext_list, sorted_index):
+    text_num = [x for x in range(len(ttext_list))]
+    bbox_list = []
+    text_list = []
+    for x in sorted_index:
+        bbox_list.append(box_list[x])
+        text_list.append(ttext_list[x])
+
     try:
         for x in text_num:
             start = bbox_list[x][1]
@@ -117,12 +149,37 @@ def sum_box(bbox_list, text_list):
                 bbox_list.remove(bbox_list[x+1])
                 text_list.remove(text_list[x+1])
                 text_num.remove(x+1)
-
             else:
                 pass
     except:
         pass
     return np.array(bbox_list), text_list
+
+x = 0
+z = 0
+def jaegi(bbox_list, text_list, x, z):
+    y = []
+    t = 10
+    try:
+        if bbox_list[x][0][0] - t <= bbox_list[x + 1][0][0] <= bbox_list[x][0][0] + t:
+            text_list[z] = text_list[z] +' ' + text_list[z+1]
+            # x 불러오기,
+            text_list.remove(text_list[z+1])
+            print(text_list)
+            x += 1
+            # print('x :', x)
+            jaegi(bbox_list, text_list, x, z)
+        elif x == len(bbox_list)-1:
+            return text_list
+        else:
+            x += 1
+            z += 1
+            # print('z :', z)
+            jaegi(bbox_list, text_list, x, z)
+    except:
+        pass
+
+
 
 def translate_texts(texts: List[str], type='google') -> List[str]:
     global tranlated_texts
@@ -275,14 +332,19 @@ def contour_mask(mask):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     bbox_list, text_list = easy_ocr_result(img)
-    print('bbox_list: ', len(bbox_list))
-    print('Text_list :', text_list)
-    print('(len)bbox_list', len(bbox_list))
-    bbox_list, text_list = sum_box(bbox_list, text_list)
-    print('bbox_list: ', len(bbox_list))
-    print('Text_list :', text_list)
-    print('(len)bbox_list', len(bbox_list))
+    # print('bbox_list: ', len(bbox_list))
+    # print('Text_list :', text_list)
+    # print('(len)bbox_list', len(bbox_list))
+    sorted_index = array_box(bbox_list, text_list)
 
+    bbox_list, text_list = sum_box(bbox_list, text_list, sorted_index)
+    print(text_list)
+    # print('bbox_list: ', len(bbox_list))
+    # print('Text_list :', text_list)
+    # print('(len)bbox_list', len(bbox_list))
+    text = jaegi(bbox_list, text_list, x, z)
+    print(text)
+    # print(text)
     # tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
     # print(f'Tranlated_texts : {tranlated_texts}')
     # color_list = []

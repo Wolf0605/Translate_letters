@@ -92,7 +92,17 @@ def draw_contour(img):
 # img_contour = draw_contour(img)
 # cv2.imshow('gg', img_contour)
 # cv2.waitKey(0)
-lst = [[[1,2],[3,4],[5,6],[7,8]]]
-print(lst[0][0])
-s, y = zip(lst[0][0])
-print(s,y)
+def argsort(seq):
+    # http://stackoverflow.com/questions/3071415/efficient-method-to-calculate-the-rank-vector-of-a-list-in-python
+    return sorted(range(len(seq)), key=seq.__getitem__)
+def tt():
+    text_list = [[[0,0],[13,0]], [[0,1],[13,1]], [[14,0],[27,0]]]
+    sort_idx = []
+    for x in range(len(text_list)):
+        t = text_list[x][0][0] + text_list[x][0][1] * 10000
+        sort_idx.append(t)
+    print(sort_idx)
+
+    print(argsort(sort_idx))
+
+tt()

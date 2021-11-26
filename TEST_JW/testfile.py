@@ -113,13 +113,14 @@ def ja(lst):
         else:
             pass
 
-list = ['asd faejo igjioa vamlsd fpe lpaf ejp po oapsod oaep mvpampe ajbo las.']
-len = len(list[0])
+list = ['asd faejo igjioa vamlsd fpe lpaf ejp po oapsod oaep mvpampe ajbo las.',
+        'asdf age b bsb  sebs s']
+len = len(list[1])
 line = 3
 t = round(len / line)
 print(t, type(t))
 
-s = textwrap.wrap(list[0], t)
+s = textwrap.wrap(list[1], t)
 print(s)
 # # z=[1]
 # if z == []:

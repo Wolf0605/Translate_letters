@@ -160,6 +160,7 @@ x = 1
 z = 0
 y=[]
 start_index = []
+change_start_index = []
 len_index=[]
 def jaegi(bbox_list, text_list, x, z):
     t = 10
@@ -172,9 +173,10 @@ def jaegi(bbox_list, text_list, x, z):
             for x in range(len(start_index)-1):
                 len_index.append(y.index(start_index[x+1])-y.index(start_index[x])+1)
             len_index.append(len(y[y.index(start_index[-1]):])+1)
-
-        return text_list, start_index, len_index
-    elif bbox_list[x-1][0][0] - t <= bbox_list[x][0][0] <= bbox_list[x-1][0][0] + t:
+        print(y)
+        return text_list, change_start_index, len_index
+    elif bbox_list[x-1][0][0] - t <= bbox_list[x][0][0] <= bbox_list[x-1][0][0] + t\
+            and bbox_list[x][0][1] - t <= bbox_list[x-1][3][1] <= bbox_list[x][0][1] + t:
         text_list[z] = text_list[z] +' ' + text_list[z+1]
         # x 불러오기,
         text_list.remove(text_list[z+1])
@@ -184,8 +186,10 @@ def jaegi(bbox_list, text_list, x, z):
             pass
         elif len(y) == 1:
             start_index.append(y[0])
+            change_start_index.append(y[0])
         elif y[-1] != y[-2]+1:
             start_index.append(y[-1])
+            change_start_index.append(start_index[-2] + y[-1] - (y[-2] + 1))
 
         x += 1
         # print('x :', x)
@@ -219,15 +223,15 @@ def translate_texts(texts: List[str], type='google') -> List[str]:
 
     return tranlated_texts
 
-def split_text(tranlated_texts, start_index, len_index):
-    if start_index == []:
-        return 0
+def split_text(tranlated_texts, change_start_index, len_index):
+    if change_start_index == []:
+        pass
     else:
-        for idx, x in enumerate(start_index):
+        for idx, x in enumerate(change_start_index):
             line = round(len(tranlated_texts[x]) / len_index[idx])
-            print(type(tranlated_texts[x]))
-            print(line, type(line) )
-            print(len_index[idx], type(len_index[idx]))
+            # print(type(tranlated_texts[x]))
+            # print(line, type(line) )
+            # print(len_index[idx], type(len_index[idx]))
             split_word = textwrap.wrap(translate_texts[x], line)
             if len(split_word) != len_index[idx]:
                 split_word [-2] = split_word[-2] + split_word[-1]
@@ -237,7 +241,7 @@ def split_text(tranlated_texts, start_index, len_index):
 
             tranlated_texts.remove(tranlated_texts[x])
             for k in split_word:
-                j = start_index
+                j = change_start_index
                 tranlated_texts.insert(j,k)
                 j += 1
     return tranlated_texts
@@ -387,15 +391,15 @@ if __name__ == '__main__':
     # print('Text_list :', text_list)
     # print('(len)bbox_list', len(bbox_list))
     print('bbox _ len : ', len(bbox_list))
-    text_list, start_index, len_index = jaegi(bbox_list, text_list, x, z)
+    text_list, change_start_index, len_index = jaegi(bbox_list, text_list, x, z)
     print('text_list :', text_list)
-    print('start_index :', start_index)
+    print('change_start_index :', change_start_index)
     print('len_index :', len_index)
 
 
     tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
     print(f'Tranlated_texts : {tranlated_texts}')
-    tranlated_texts = split_text(tranlated_texts, start_index, len_index)
+    tranlated_texts = split_text(tranlated_texts, change_start_index, len_index)
     # color_list = []
     # reverse_sorted_index = []
     # for bbox in bbox_list:

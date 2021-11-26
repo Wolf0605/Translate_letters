@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from sklearn.cluster import KMeans
+import textwrap
 file_path = r'DDEEEDDD.png'
 img = cv2.imread(file_path)
 img_width = img.shape[1]
@@ -107,6 +108,23 @@ def tt():
 lst = []
 def ja(lst):
     for x in range(5):
-        if x in [1,3,5]
+        if x in [1,3,5]:
             lst.append(x)
         else:
+            pass
+
+list = ['asd faejo igjioa vamlsd fpe lpaf ejp po oapsod oaep mvpampe ajbo las.']
+len = len(list[0])
+line = 3
+t = round(len / line)
+print(t, type(t))
+
+s = textwrap.wrap(list[0], t)
+print(s)
+# # z=[1]
+# if z == []:
+#     print('hello')
+# list =[1,2,3,4]
+# list.insert(2, 'asdf')
+# list.insert(3,'atttt')
+# print(list)

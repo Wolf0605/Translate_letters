@@ -9,6 +9,7 @@ import numpy as np
 from PIL import Image, ImageFont, ImageDraw
 import torch
 from sklearn.cluster import KMeans
+import textwrap
 
 # print(torch.cuda.is_available())
 
@@ -155,25 +156,44 @@ def sum_box(box_list, ttext_list, sorted_index):
         pass
     return np.array(bbox_list), text_list
 
-x = 0
+x = 1
 z = 0
+y=[]
+start_index = []
+len_index=[]
 def jaegi(bbox_list, text_list, x, z):
     t = 10
+    if x == len(bbox_list):
+        if len(start_index) == 0:
+            pass
+        elif len(start_index) == 1:
+            len_index.append(len(y))
+        else:
+            for x in range(len(start_index)-1):
+                len_index.append(y.index(start_index[x+1])-y.index(start_index[x])+1)
+            len_index.append(len(y[y.index(start_index[-1]):])+1)
 
-    if x == len(bbox_list)-1:
-        return text_list
-    elif bbox_list[x][0][0] - t <= bbox_list[x + 1][0][0] <= bbox_list[x][0][0] + t:
+        return text_list, start_index, len_index
+    elif bbox_list[x-1][0][0] - t <= bbox_list[x][0][0] <= bbox_list[x-1][0][0] + t:
         text_list[z] = text_list[z] +' ' + text_list[z+1]
         # x 불러오기,
         text_list.remove(text_list[z+1])
-        print(text_list)
+        # print(text_list)
+        y.append(x-1)
+        if len(y) == 0:
+            pass
+        elif len(y) == 1:
+            start_index.append(y[0])
+        elif y[-1] != y[-2]+1:
+            start_index.append(y[-1])
+
         x += 1
         # print('x :', x)
-        jaegi(bbox_list, text_list, x, z)
+        return jaegi(bbox_list, text_list, x, z)
     else:
         x += 1
         z += 1
-        jaegi(bbox_list, text_list, x, z)
+        return jaegi(bbox_list, text_list, x, z)
 
 def translate_texts(texts: List[str], type='google') -> List[str]:
     global tranlated_texts
@@ -198,6 +218,36 @@ def translate_texts(texts: List[str], type='google') -> List[str]:
                 print("Error Code:", rescode)
 
     return tranlated_texts
+
+def split_text(tranlated_texts, start_index, len_index):
+    if start_index == []:
+        return 0
+    else:
+        for idx, x in enumerate(start_index):
+            line = round(len(tranlated_texts[x]) / len_index[idx])
+            print(type(tranlated_texts[x]))
+            print(line, type(line) )
+            print(len_index[idx], type(len_index[idx]))
+            split_word = textwrap.wrap(translate_texts[x], line)
+            if len(split_word) != len_index[idx]:
+                split_word [-2] = split_word[-2] + split_word[-1]
+                del split_word[-1]
+            else:
+                pass
+
+            tranlated_texts.remove(tranlated_texts[x])
+            for k in split_word:
+                j = start_index
+                tranlated_texts.insert(j,k)
+                j += 1
+    return tranlated_texts
+
+
+
+
+
+
+
 def cut_image(img, bbox):
     x_min = bbox[0, 0]
     x_max = bbox[1, 0]
@@ -337,13 +387,15 @@ if __name__ == '__main__':
     # print('Text_list :', text_list)
     # print('(len)bbox_list', len(bbox_list))
     print('bbox _ len : ', len(bbox_list))
-    text = jaegi(bbox_list, text_list, x, z)
-    print(text)
-    # print(type(text))
-    # print(idx)
-    # print(text)
-    # tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
-    # print(f'Tranlated_texts : {tranlated_texts}')
+    text_list, start_index, len_index = jaegi(bbox_list, text_list, x, z)
+    print('text_list :', text_list)
+    print('start_index :', start_index)
+    print('len_index :', len_index)
+
+
+    tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
+    print(f'Tranlated_texts : {tranlated_texts}')
+    tranlated_texts = split_text(tranlated_texts, start_index, len_index)
     # color_list = []
     # reverse_sorted_index = []
     # for bbox in bbox_list:

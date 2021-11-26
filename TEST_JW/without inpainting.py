@@ -16,7 +16,7 @@ from sklearn.cluster import KMeans
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # 이미지 파일 경로
-file_path = r'phone.png'
+file_path = r'airport-sign-set-vector-illustration-260nw-403667989.jpg'
 img = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
 # secret key 로 집어넣어야함
@@ -52,10 +52,10 @@ def easy_ocr_result(img, language='en', draw=True, text=False):
     # 텍스트 리스트
     text_list = []
 
-    if draw == False: # 원래 이미지만 출력
+    if draw == False:  # 원래 이미지만 출력
         display(img)
 
-    elif draw == True and text == False: # 이미지에 바운딩 박스그리기
+    elif draw == True and text == False:  # 이미지에 바운딩 박스그리기
         img2 = img.copy()
         # img2 = cv2.cvtColor(img2, cv2.COLOR_GRAY2BGR)
         for (bbox, text, prob) in results:
@@ -102,104 +102,8 @@ def easy_ocr_result(img, language='en', draw=True, text=False):
 
         # show the output image
         display(img2)
-    return bbox_list, text_list
-
-def argsort(seq):
-    # http://stackoverflow.com/questions/3071415/efficient-method-to-calculate-the-rank-vector-of-a-list-in-python
-    return sorted(range(len(seq)), key=seq.__getitem__)
-
-def array_box(bbox_list, text_list):
-    text_num = [x for x in range(len(text_list))]
-    try:
-        for x in text_num:
-            start = (bbox_list[x][0][1] + bbox_list[x][3][1]) //2
-            later = (bbox_list[x+1][0][1] + bbox_list[x+1][3][1]) //2
-            t = 10
-            if start - t <= later <= start + t:
-                bbox_list[x+1][0][1] = bbox_list[x][0][1]
-                text_num.remove(x + 1)
-            else:
-                pass
-    except:
-        pass
-    # 하나씩 집어 넣어서 sort 정렬.
-    sort_idx = []
-    for x in range(len(text_list)):
-        t = bbox_list[x][0][0] + bbox_list[x][0][1] * 10000
-        sort_idx.append(t)
-    # print(sort_idx)
-    sorted_index = argsort(sort_idx)
-    return sorted_index
-
-def sum_box(box_list, ttext_list, sorted_index):
-    text_num = [x for x in range(len(ttext_list))]
-    bbox_list = []
-    text_list = []
-    for x in sorted_index:
-        bbox_list.append(box_list[x])
-        text_list.append(ttext_list[x])
-
-    try:
-        for x in text_num:
-            start = bbox_list[x][1]
-            later = bbox_list[x+1][0]
-            t= 13
-            if start[0] - t <= later[0] <= start[0] + t and start[1] -t <= later[1] <= start[1] +t:
-                bbox_list[x] = [bbox_list[x][0],bbox_list[x+1][1],bbox_list[x+1][2],bbox_list[x][3]]
-                text_list[x] = text_list[x] + ' ' +text_list[x+1]
-                bbox_list.remove(bbox_list[x+1])
-                text_list.remove(text_list[x+1])
-                text_num.remove(x+1)
-            else:
-                pass
-    except:
-        pass
     return np.array(bbox_list), text_list
-<<<<<<< Updated upstream
-=======
-x = 1
-z = 0
-def jaegi(bbox_list, text_list, x, z):
-    t = 10
-    if x < len(bbox_list):
-        if bbox_list[x-1][0][0] - t <= bbox_list[x][0][0] <= bbox_list[x-1][0][0] + t:
-            text_list[z] = text_list[z] +' ' + text_list[z+1]
-            # x 불러오기,
-            text_list.remove(text_list[z+1])
-            print(text_list)
-            x += 1
-            # print('x :', x)
-            jaegi(bbox_list, text_list, x, z)
-        elif bbox_list[x-1][0][0] - t > bbox_list[x][0][0] or bbox_list[x][0][0] > bbox_list[x-1][0][0] + t:
-            x += 1
-            z += 1
-            # print('z :', z)
-            jaegi(bbox_list, text_list, x, z)
-    else:
-        return 123
 
-
->>>>>>> Stashed changes
-
-x = 0
-z = 0
-def jaegi(bbox_list, text_list, x, z):
-    t = 10
-
-    if x == len(bbox_list)-1:
-        return text_list
-    elif bbox_list[x][0][0] - t <= bbox_list[x + 1][0][0] <= bbox_list[x][0][0] + t:
-        text_list[z] = text_list[z] +' ' + text_list[z+1]
-        # x 불러오기,
-        text_list.remove(text_list[z+1])
-        print(text_list)
-        x += 1
-        # print('x :', x)
-        jaegi(bbox_list, text_list, x, z)
-    else:
-        x += 1
-        z += 1
-        jaegi(bbox_list, text_list, x, z)
 
 def translate_texts(texts: List[str], type='google') -> List[str]:
     global tranlated_texts
@@ -224,36 +128,53 @@ def translate_texts(texts: List[str], type='google') -> List[str]:
                 print("Error Code:", rescode)
 
     return tranlated_texts
-def cut_image(img, bbox):
+
+
+def cut_image(ori_img, bbox):
     x_min = bbox[0, 0]
     x_max = bbox[1, 0]
     y_min = bbox[0, 1]
     y_max = bbox[2, 1]
 
-    img = img[y_min:y_max, x_min:x_max]
-
+    img = ori_img[y_min:y_max, x_min:x_max]
+    # quarter_y = np.int32(y_max - (y_max - y_min) / 3)
+    #
+    # crop_img = ori_img[quarter_y:y_max, x_min:x_max]
     return img
 
-def mask_image(img2):
-    # masking 작업
-    img_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
-    _, mask = cv2.threshold(img_gray, 0, 255, cv2.THRESH_OTSU)
 
-    # 글씨 색이 밝든 어둡든 masking 씌워주기
-    return_rgb = rgb(img2)
+def mask_image(cut_img, reverse_list):
+    img_width = cut_img.shape[1]
+    img_height = cut_img.shape[0]
+    img_gray = cv2.cvtColor(cut_img, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)
+    return_rgb = rgb(cut_img)
     if return_rgb != 0:
-        mask = cv2.bitwise_not(mask)
+        thresh = cv2.bitwise_not(thresh)
 
-    kernel = np.ones((3, 3), np.uint8)
-    mask = cv2.dilate(mask, kernel, iterations=2)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    kernel = np.ones((5, 5), np.uint8)
+    dilation = cv2.dilate(thresh, kernel, iterations=1)
+    contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL, 3)
 
-    # contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, 3)
-    # img_contour = cv2.drawContours(img_original, contours, -1, (0, 255, 0), 3)
+    cut_img = cv2.cvtColor(cut_img, cv2.COLOR_BGR2RGB)
+    index_box = []
+    for x in range(len(contours)):
+        if 0 not in contours[x]:
+            for i in range(len(contours[x])):
+                if img_width - 2 <= contours[x][i][0][0] or img_height - 2 <= contours[x][i][0][1]:
+                    break
+                else:
+                    index_box.append(x)
+    index_box = set(index_box)
+    new_conoturs = []
+    for x in index_box:
+        new_conoturs.append(contours[x])
 
-    # plt.imshow(mask)
-    # plt.show()
+    reverse_list
+    result = list(map(int, color_list[0][reverse_list[0][0]]))
+    mask = cv2.drawContours(cut_img, new_conoturs, -1, tuple(result), thickness=cv2.FILLED)
+    mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
     return mask
 
 
@@ -263,8 +184,9 @@ def change_original(masked_img, bbox):
     y_min = bbox[0, 1]
     y_max = bbox[2, 1]
 
-    img[y_min:y_max, x_min:x_max] =  masked_img
+    img[y_min:y_max, x_min:x_max] = masked_img
     return img
+
 
 # 123
 def rgb(img):
@@ -272,10 +194,11 @@ def rgb(img):
     _, mask = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
 
     flat_list = list(mask.ravel())
-    if flat_list.count(0) > len(flat_list)/2:
+    if flat_list.count(0) > len(flat_list) / 2:
         return 0
 
-def rewrite(tranlated_texts ,bbox_list, color, index):
+
+def rewrite(tranlated_texts, bbox_list, color, index):
     # 폰트( 구글 폰트에서 이용가능 ) , 폰트크기
 
     image_path = 'output_inpainting'
@@ -294,11 +217,12 @@ def rewrite(tranlated_texts ,bbox_list, color, index):
         font_size = decsion_font_size(bbox_hi, text)
         title_font = ImageFont.truetype('ttf/NotoSansKR-Bold.otf', font_size)
         result = list(map(int, color[idx][index[idx][1]]))
-        image_editable.text((bbox[0][0], bbox[0][1]), text, tuple(result), anchor = 'lt', font=title_font)
+        image_editable.text((bbox[0][0], bbox[0][1]), text, tuple(result), anchor='lt', font=title_font)
 
     save_rewrite_images(img)
 
-def decsion_font_size( bbox_hi, text):
+
+def decsion_font_size(bbox_hi, text):
     font_size = 1
     title_font = ImageFont.truetype('ttf/NotoSansKR-Bold.otf', font_size)
     _, hi = title_font.getsize(text)
@@ -309,29 +233,31 @@ def decsion_font_size( bbox_hi, text):
     return font_size
 
 
-
 def save_inpainting_images():
     image_path = f'output_inpainting'
     save_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     save_img.save(f"{image_path}/{file_path}")
 
+
 def save_rewrite_images(img):
     image_path = 'output_rewrite'
     img.save(f"{image_path}/{file_path}")
 
+
 def clt_(img):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img = img.reshape((img.shape[0] * img.shape[1], 3)) # height, width 통합
+    img = img.reshape((img.shape[0] * img.shape[1], 3))  # height, width 통합
 
-    k = 3 # 예제는 5개로 나누겠습니다
-    clt = KMeans(n_clusters = k, random_state=0)
+    k = 3  # 예제는 5개로 나누겠습니다
+    clt = KMeans(n_clusters=k, random_state=0)
     clt.fit(img)
     return clt
+
 
 def centroid_histogram(clt):
     # grab the number of different clusters and create a histogram
     # based on the number of pixels assigned to each cluster
-    numLabels = np.arange(0, len(np.unique(clt.labels_))+1)
+    numLabels = np.arange(0, len(np.unique(clt.labels_)) + 1)
     (hist, _) = np.histogram(clt.labels_, bins=numLabels)
 
     # normalize the histogram, such that it sums to one
@@ -340,84 +266,26 @@ def centroid_histogram(clt):
     # return the histogram
     return hist
 
-def contour_mask(mask):
-    contour_pos = []
-    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, 3)
-
-    for pos in range(len(contours)):
-        area = cv2.contourArea(contours[pos])
-        if area > 100:
-            contour_pos.append(pos)
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     bbox_list, text_list = easy_ocr_result(img)
-<<<<<<< HEAD
-=======
-<<<<<<< Updated upstream
     print('Text_list :', text_list)
     tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
     print(f'Tranlated_texts : {tranlated_texts}')
     color_list = []
     reverse_sorted_index = []
     for bbox in bbox_list:
-        img_cut = cut_image(img, bbox)
+        img_cut  = cut_image(img, bbox)
         clt = clt_(img_cut)
         hist = centroid_histogram(clt)
         color_list.append(clt.cluster_centers_)
         reverse_index = (-hist).argsort()
         reverse_sorted_index.append(reverse_index)
-
-        mask = mask_image(img_cut)
-        masked_img = cv2.inpaint(img_cut, mask, 3, cv2.INPAINT_TELEA)
-        img = change_original(masked_img, bbox)
+        # print('bbox : ', bbox)
+        mask = mask_image(img_cut, reverse_sorted_index)
+        img = change_original(mask, bbox)
 
     save_inpainting_images()
-    rewrite(tranlated_texts,bbox_list,color_list, reverse_sorted_index)
-=======
->>>>>>> c4e17e2698f802e435584f69a0c4a9d5843791e3
-    # print('bbox_list: ', len(bbox_list))
-    # print('Text_list :', text_list)
-    # print('(len)bbox_list', len(bbox_list))
-    sorted_index = array_box(bbox_list, text_list)
-
-    bbox_list, text_list = sum_box(bbox_list, text_list, sorted_index)
-    # print(text_list)
-    # print('bbox_list: ', len(bbox_list))
-    # print('Text_list :', text_list)
-<<<<<<< HEAD
-    # print('(len)bbox_list', len(bbox_list))
-    print('bbox _ len : ', len(bbox_list))
-    text = jaegi(bbox_list, text_list, x, z)
-    print(text)
-    # print(type(text))
-    # print(idx)
-=======
-    print('(len)bbox_list', len(bbox_list))
-    text = jaegi(bbox_list, text_list, x, z)
-    print(text)
->>>>>>> c4e17e2698f802e435584f69a0c4a9d5843791e3
-    # print(text)
-    # tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
-    # print(f'Tranlated_texts : {tranlated_texts}')
-    # color_list = []
-    # reverse_sorted_index = []
-    # for bbox in bbox_list:
-    #     img_cut = cut_image(img, bbox)
-    #     clt = clt_(img_cut)
-    #     hist = centroid_histogram(clt)
-    #     color_list.append(clt.cluster_centers_)
-    #     reverse_index = (-hist).argsort()
-    #     reverse_sorted_index.append(reverse_index)
-    #
-    #     mask = mask_image(img_cut)
-    #     masked_img = cv2.inpaint(img_cut, mask, 3, cv2.INPAINT_TELEA)
-    #     img = change_original(masked_img, bbox)
-
-    # save_inpainting_images()
-    # rewrite(tranlated_texts,bbox_list,color_list, reverse_sorted_index)
-<<<<<<< HEAD
-=======
->>>>>>> Stashed changes
->>>>>>> c4e17e2698f802e435584f69a0c4a9d5843791e3
+    rewrite(tranlated_texts, bbox_list, color_list, reverse_sorted_index)
 

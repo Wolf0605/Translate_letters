@@ -17,7 +17,7 @@ import textwrap
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # 이미지 파일 경로
-file_path = r'airport-sign-set-vector-illustration-260nw-403667989.jpg'
+file_path = r'phone.png'
 img = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
 # secret key 로 집어넣어야함
@@ -371,12 +371,12 @@ def rewrite(tranlated_texts, bbox_list, color_list):
         title_font = ImageFont.truetype("ttf/NotoSansKR-Bold.otf", np.maximum(2, int(bbox_hi[idx]) - 5))  # -가 될경우 최소 2로 설정.
         wi, hi = title_font.getsize(text)
 
-        print('bbox_hi[idx]-15', type(bbox_hi[idx] - 15))
-
-        print('title_font', title_font)
+        # print('bbox_hi[idx]-15', type(bbox_hi[idx] - 15))
+        #
+        # print('title_font', title_font)
         start_x = ((bbox[0][0] + bbox[1][0]) // 2 - wi / 2)
         start_y = ((bbox[0][1] + bbox[2][1]) // 2 - hi / 2)
-        image_editable.text((start_x, start_y), text, color, anchor=None, font=title_font)
+        image_editable.text((bbox[0][0], bbox[0][1]), text, color, anchor=None, font=title_font)
 
     save_rewrite_images(img)
 

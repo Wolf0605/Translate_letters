@@ -109,19 +109,14 @@ def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
 
 def array_box(bbox_list, text_list):
-    text_num = [x for x in range(len(text_list))]
-    try:
-        for x in text_num:
-            start = (bbox_list[x][0][1] + bbox_list[x][3][1]) //2
-            later = (bbox_list[x+1][0][1] + bbox_list[x+1][3][1]) //2
-            t = 10
+    # text_num = [x for x in ]
+    t = 10
+    for x in range(len(text_list)):
+        start = (bbox_list[x][1][1] + bbox_list[x][3][1]) //2
+        for y in range(len(text_list)):
+            later = (bbox_list[y][1][1] + bbox_list[y][3][1]) //2
             if start - t <= later <= start + t:
-                bbox_list[x+1][0][1] = bbox_list[x][0][1]
-                text_num.remove(x + 1)
-            else:
-                pass
-    except:
-        pass
+                bbox_list[y][0][1] = bbox_list[x][0][1]
     # 하나씩 집어 넣어서 sort 정렬.
     sort_idx = []
     for x in range(len(text_list)):
@@ -129,32 +124,32 @@ def array_box(bbox_list, text_list):
         sort_idx.append(t)
     # print(sort_idx)
     sorted_index = argsort(sort_idx)
-    return sorted_index
-
-def sum_box(box_list, ttext_list, sorted_index):
-    text_num = [x for x in range(len(ttext_list))]
-    bbox_list = []
-    text_list = []
+    box_list = []
+    ttext_list = []
     for x in sorted_index:
-        bbox_list.append(box_list[x])
-        text_list.append(ttext_list[x])
+        box_list.append(bbox_list[x])
+        ttext_list.append(text_list[x])
+    print(bbox_list[9: 14])
+    print(ttext_list[9: 14])
+    return box_list, ttext_list
 
+x = 0
+def sum_box(bbox_list, text_list,x):
     try:
-        for x in text_num:
-            start = bbox_list[x][1]
-            later = bbox_list[x+1][0]
-            t= 20
-            if start[0] - t <= later[0] <= start[0] + t and start[1] -t <= later[1] <= start[1] +t:
-                bbox_list[x] = [bbox_list[x][0],bbox_list[x+1][1],bbox_list[x+1][2],bbox_list[x][3]]
-                text_list[x] = text_list[x] + ' ' +text_list[x+1]
-                bbox_list.remove(bbox_list[x+1])
-                text_list.remove(text_list[x+1])
-                text_num.remove(x+1)
-            else:
-                pass
+        start = bbox_list[x][0]
+        later = bbox_list[x+1][0]
+        t = 10
+        if start[1] == later[1] and bbox_list[x][1][0] -t <= later[0] <= bbox_list[x][1][0] +t:
+            bbox_list[x] = [bbox_list[x][0], bbox_list[x + 1][1], bbox_list[x + 1][2], bbox_list[x][3]]
+            text_list[x] = text_list[x] + ' ' + text_list[x + 1]
+            bbox_list.remove(bbox_list[x + 1])
+            text_list.remove(text_list[x + 1])
+            return sum_box(bbox_list, text_list, x)
+        else:
+            x += 1
+            return sum_box(bbox_list,text_list, x)
     except:
-        pass
-    return np.array(bbox_list), text_list
+        return np.array(bbox_list), text_list
 
 x = 1
 z = 0
@@ -192,6 +187,7 @@ def jaegi(bbox_list, text_list, x, z):
 
         x += 1
         # print('x :', x)
+        print(y)
         return jaegi(bbox_list, text_list, x, z)
     else:
         x += 1
@@ -469,16 +465,22 @@ def change_bg_color(img):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     bbox_list, text_list = easy_ocr_result(img)
-    sorted_index = array_box(bbox_list, text_list)
+    bbox_list, text_list = array_box(bbox_list, text_list)
+    print(text_list)
     print(' len - bbox_list : ', len(bbox_list))
-    bbox_list, text_list = sum_box(bbox_list, text_list, sorted_index)
-    print(' len - bbox_list : ', len(bbox_list))
+    print(' len - text_list: ', len(text_list))
+    bbox_list, text_list = sum_box(bbox_list, text_list, x)
+
+    print('change len - bbox_list : ', len(bbox_list))
+    print(' len - text_list: ', len(text_list))
+    print(text_list)
     text_list, change_start_index, len_index = jaegi(bbox_list, text_list, x, z)
+    print(change_start_index, len_index)
     tranlated_texts: List[str] = translate_texts(texts=text_list, type='naver')
-    # print(f'Tranlated_texts : {tranlated_texts}')
+    print(f'Tranlated_texts : {tranlated_texts}')
     tranlated_texts = split_text(tranlated_texts, change_start_index, len_index)
     print(tranlated_texts)
-    # print(tranlated_texts)
+    print(tranlated_texts)
 
     color_list = []
     # reverse_sorted_index = []
@@ -499,8 +501,8 @@ if __name__ == '__main__':
         #
         # mask = mask_image(img_cut)
         # masked_img = cv2.inpaint(img_cut, mask, 3, cv2.INPAINT_TELEA)
-        img = change_original(img,img_cut, bbox)
-
+        # img = change_original(img,img_cut, bbox)
+    #
     save_inpainting_images()
 
     rewrite(tranlated_texts,bbox_list,color_list)

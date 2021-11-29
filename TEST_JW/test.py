@@ -17,7 +17,7 @@ import textwrap
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # 이미지 파일 경로
-file_path = r'am_chef.png'
+file_path = r'am3.png'
 img = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
 # secret key 로 집어넣어야함
@@ -110,37 +110,41 @@ def argsort(seq):
 
 # 랜덤으로 배열되어 있는 text_list 와 bbox_list를 사람이 글을 읽듯 그 순서에 맞게 재배열해주는 과정
 def array_box(bbox_list, text_list):
-    # text_num = [x for x in ]
     t = 10
+    # 첫번쨰 바운딩박스의 1번쨰점의 y 값과 3 번쨰점의 y 값의 평균을 구하는것
+    # 그리고 아래도 같은 작업을 반복하여 만약 차가 +- 10 정도 나오면 0번쨰 y 값이 같도록 설정한다
     for x in range(len(text_list)):
         start = (bbox_list[x][1][1] + bbox_list[x][3][1]) //2
         for y in range(len(text_list)):
             later = (bbox_list[y][1][1] + bbox_list[y][3][1]) //2
             if start - t <= later <= start + t:
                 bbox_list[y][0][1] = bbox_list[x][0][1]
-    # 하나씩 집어 넣어서 sort 정렬.
+    # 하나씩 집어넣어서 y 값을 같도록하였으니까 x 같은 y 값에 x 만 다르므로 , x 에 따라 순서가 배열되도록 설정
     sort_idx = []
     for x in range(len(text_list)):
         t = bbox_list[x][0][0] + bbox_list[x][0][1] * 10000
         sort_idx.append(t)
-    # print(sort_idx)
+    # argsort 를 활용하여 그 순서에 맞게 bbox_list 와 text_list 를 재배열
     sorted_index = argsort(sort_idx)
     box_list = []
     ttext_list = []
     for x in sorted_index:
         box_list.append(bbox_list[x])
         ttext_list.append(text_list[x])
-    print(bbox_list[9: 14])
-    print(ttext_list[9: 14])
     return box_list, ttext_list
 
 # 바운딩박스 옆에 바로 바운딩박스가 붙어있는 경우, 그걸 하나의 박스로 만들고 , text_list도 두개 혹은 그 이상을 하나로 만들어 주는 과정
+# 몇줄이 나오는지 모르니까 재귀를 이용한다
 x = 0
 def sum_box(bbox_list, text_list,x):
+    # 처음 바운딩박스와 그다음 바운딩 박스의 0번쨰 점을 start, later 로 지정
     try:
         start = bbox_list[x][0]
         later = bbox_list[x+1][0]
         t = 10
+        # start 와 later 의 y 값이 같고( array_box 에서 이미 y 를 같게 만들어줬다) , later 의 x 값이
+        # 바운딩박스의 첫번쨰점의 x 값과 +- 10 차이가 나면 bbox_list 와 text_list를 ex) bbox_list[0] + bbox_list[1]
+        # text_list[0] + text_list[1] 을 더하고 원래 있던 bbox_list[1], text_list[1] 은 삭제하는 형식
         if start[1] == later[1] and bbox_list[x][1][0] -t <= later[0] <= bbox_list[x][1][0] +t:
             bbox_list[x] = [bbox_list[x][0], bbox_list[x + 1][1], bbox_list[x + 1][2], bbox_list[x][3]]
             text_list[x] = text_list[x] + ' ' + text_list[x + 1]
@@ -164,6 +168,7 @@ len_index=[]
 # 글의 문장과 다음 문장의 시작점 x 와 글이 그 글씨의 높이가 일정한 경우. 그래서 하나의 문단을 전체 하나의 문장으로 뽑는다.
 def jaegi(bbox_list, text_list, x, z):
     t = 10
+    # 만약 맨 마지막 호출 x == len(bbox_list) 일떄, len_index 각 문단이 몇줄인지 저장
     if x == len(bbox_list):
         if len(start_index) == 0:
             pass
@@ -174,6 +179,9 @@ def jaegi(bbox_list, text_list, x, z):
                 len_index.append(y.index(start_index[x+1])-y.index(start_index[x])+1)
             len_index.append(len(y[y.index(start_index[-1]):])+1)
         return text_list, change_start_index, len_index
+    # 한 문단의 시작점 x 가 비슷하고, y 가 비슷할경우, text_list 를 합쳐주고 위와같이 뒷부분을 삭제시키는 함수
+    # 그리고 문단이 시작되는 index 를 change_start_index 에 집어넣고 이후에 사용한다
+    # 재귀 함수이므로 x 가 마지막 호출이 아닌경우는  반복호출
     elif bbox_list[x-1][0][0] - t <= bbox_list[x][0][0] <= bbox_list[x-1][0][0] + t\
             and bbox_list[x][0][1] - t <= bbox_list[x-1][3][1] <= bbox_list[x][0][1] + t:
         text_list[z] = text_list[z] +' ' + text_list[z+1]
@@ -225,16 +233,16 @@ def translate_texts(texts: List[str], type='google') -> List[str]:
 
 # 전체로 뽑은 문단을 이제 그 문단의 줄 갯수에 맞게 text.wrap 이라는 라이브러리를 활용하여 분산시켜서 list 로 나눠준다.
 def split_text(tranlated_texts, change_start_index, len_index):
+    # 만약 문단이없는경우는 pass 하기
     if change_start_index == []:
         pass
     else:
         s = 0
+        # 문단이 시작되는 부분을 보고, 만약 시작되는 부분이면 , text.wrap 을 이용하여, 그 시작되는 문단이 몇줄인지 확인하고
+        # 그 문단의 줄만큼 통번역한 부분을 분배(insert)해준다
         for idx, x in enumerate(change_start_index):
             line = round (len(tranlated_texts[x+s]) / len_index[idx])
-            # print(type(tranlated_texts[x]))
-            # print(line, type(line) )
-            # print(len_index[idx], type(len_index[idx]))
-            # print('line :', line)
+
             split_word = textwrap.wrap(tranlated_texts[x+s], line)
 
             if len(split_word) != len_index[idx]:

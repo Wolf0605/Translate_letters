@@ -108,6 +108,7 @@ def argsort(seq):
     # http://stackoverflow.com/questions/3071415/efficient-method-to-calculate-the-rank-vector-of-a-list-in-python
     return sorted(range(len(seq)), key=seq.__getitem__)
 
+# 랜덤으로 배열되어 있는 text_list 와 bbox_list를 사람이 글을 읽듯 그 순서에 맞게 재배열해주는 과정
 def array_box(bbox_list, text_list):
     # text_num = [x for x in ]
     t = 10
@@ -133,6 +134,7 @@ def array_box(bbox_list, text_list):
     print(ttext_list[9: 14])
     return box_list, ttext_list
 
+# 바운딩박스 옆에 바로 바운딩박스가 붙어있는 경우, 그걸 하나의 박스로 만들고 , text_list도 두개 혹은 그 이상을 하나로 만들어 주는 과정
 x = 0
 def sum_box(bbox_list, text_list,x):
     try:
@@ -157,6 +159,9 @@ y=[]
 start_index = []
 change_start_index = []
 len_index=[]
+
+# 한 문단을 어떻게 한문단으로 인식할지 지정하는 코드. 보통 한 문단이라고 하는것은, 사람이 글을 읽을 때와 마찬가지로 시작점의 x 값이 비슷하며,
+# 글의 문장과 다음 문장의 시작점 x 와 글이 그 글씨의 높이가 일정한 경우. 그래서 하나의 문단을 전체 하나의 문장으로 뽑는다.
 def jaegi(bbox_list, text_list, x, z):
     t = 10
     if x == len(bbox_list):
@@ -218,6 +223,7 @@ def translate_texts(texts: List[str], type='google') -> List[str]:
 
     return tranlated_texts
 
+# 전체로 뽑은 문단을 이제 그 문단의 줄 갯수에 맞게 text.wrap 이라는 라이브러리를 활용하여 분산시켜서 list 로 나눠준다.
 def split_text(tranlated_texts, change_start_index, len_index):
     if change_start_index == []:
         pass
